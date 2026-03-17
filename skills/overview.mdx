@@ -58,16 +58,22 @@ If the current mode doesn't match the work phase, the skill will prompt you to s
 
 ## Workflow pipeline skills
 
-Adapted from [Superpowers](https://github.com/obra/superpowers). These skills form a sequential development pipeline from idea to merged branch.
+Adapted from [Superpowers](https://github.com/obra/superpowers). These 12 skills form the full development pipeline from idea to merged branch.
 
 | Skill | Fires when... |
 |---|---|
 | `brainstorming` | You want to build something new or add a feature |
 | `writing-plans` | You have an approved design ready to implement |
-| `executing-plans` | You have a written implementation plan to execute |
+| `executing-plans` | You have a written implementation plan to execute in a separate session |
+| `subagent-driven-development` | Executing plans with fresh subagents per task in the current session |
 | `test-driven-development` | You are implementing any feature or bug fix |
 | `systematic-debugging` | You encounter a bug, test failure, or unexpected behavior |
 | `verification-before-completion` | You are about to claim something is done |
+| `requesting-code-review` | Completing a task or feature and need a review before proceeding |
+| `receiving-code-review` | You receive code review feedback to evaluate and implement |
+| `finishing-a-development-branch` | Implementation is complete and all tests pass |
+| `dispatching-parallel-agents` | You have 2+ independent tasks that can be worked on simultaneously |
+| `writing-skills` | Creating or editing Antigravity skills |
 
 ## Specialist skills
 
@@ -83,7 +89,9 @@ Adapted from [SuperClaude](https://github.com/NomenAK/SuperClaude). These skills
 | `browser-agent` | Testing UI flows, verifying web app behavior, browser automation |
 | `dependency-management` | Adding, updating, auditing, or evaluating project dependencies |
 
-## Skill categories
+## Documented skills
+
+The following 13 skills have dedicated reference pages with full process details:
 
 <CardGroup cols={2}>
   <Card title="Brainstorming" href="/skills/brainstorming">
@@ -126,6 +134,19 @@ Adapted from [SuperClaude](https://github.com/NomenAK/SuperClaude). These skills
     Deliberate evaluation criteria for every dependency decision.
   </Card>
 </CardGroup>
+
+## Additional installed skills
+
+Six more workflow pipeline skills are installed and fire automatically. They are documented inline within their workflow context:
+
+| Skill | Purpose |
+|---|---|
+| `subagent-driven-development` | Executes plans by dispatching a fresh subagent per task with two-stage review (spec compliance then code quality). Used within the `/implement` workflow when staying in the same session. |
+| `requesting-code-review` | Dispatches a `code-reviewer` subagent to review a completed task against the plan. Fires after each task in subagent-driven development. |
+| `receiving-code-review` | Governs how to receive and evaluate code review feedback — requires technical verification before implementing suggestions, not blind agreement. |
+| `finishing-a-development-branch` | Presents four structured options when implementation is complete: merge locally, push and create a PR, keep the branch, or discard. Runs tests before offering options. |
+| `dispatching-parallel-agents` | Guides dispatching independent problems to separate agents that work concurrently. Use when 3+ test files fail with different root causes, or when multiple subsystems are broken independently. |
+| `writing-skills` | Teaches how to create new Antigravity skills using TDD-for-documentation. Includes frontmatter format, description writing, and testing methodology. |
 
 ## Inspecting skills
 

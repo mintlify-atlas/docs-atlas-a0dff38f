@@ -25,15 +25,15 @@ The uninstaller removes the following:
   </Step>
 
   <Step title="Agents">
-    All agent files are deleted from `~/.gemini/antigravity/agents/`.
+    Six core agent files are deleted from `~/.gemini/antigravity/agents/`: `code-reviewer`, `backend-architect`, `frontend-architect`, `security-engineer`, `deep-research`, and `system-architect`.
+
+    <Note>
+      The `socratic-mentor` and `repo-index` agent files are not removed by the uninstaller. Delete them manually if needed: `rm ~/.gemini/antigravity/agents/socratic-mentor.md ~/.gemini/antigravity/agents/repo-index.md`
+    </Note>
   </Step>
 
   <Step title="GEMINI.md bootstrap block">
-    The `# SuperAntigravity Skills` block is stripped from `~/.gemini/GEMINI.md`. The script uses a regex to find the marker and remove everything from it to the end of the file, then saves the cleaned content.
-  </Step>
-
-  <Step title="Manifest file">
-    The install marker file at `~/.gemini/antigravity/.superantigravity-installed` is removed.
+    The `# SuperAntigravity Skills` block is stripped from `~/.gemini/GEMINI.md`. The script uses a Python regex to find the marker and remove everything from it to the end of the file, then saves the cleaned content.
   </Step>
 </Steps>
 
@@ -42,6 +42,8 @@ The uninstaller removes the following:
 - **Your `~/.gemini/GEMINI.md` file** — only the SuperAntigravity block is stripped. Any content you added before or after the block is preserved.
 - **The `~/.gemini/antigravity/` directory itself** — the parent directory is left in place in case you have other files there.
 - **Any skills, workflows, or agents you created yourself** — the uninstaller only removes files it knows about from the original install. Custom files you added are not touched.
+- **`socratic-mentor` and `repo-index` agents** — these two agents are not in the uninstaller's removal list. Remove them manually if needed.
+- **The install marker file** — `~/.gemini/antigravity/.superantigravity-installed` is not removed by the uninstaller. Remove it manually with `rm ~/.gemini/antigravity/.superantigravity-installed` if you want a fully clean state.
 
 <Note>
   If the uninstaller does not find the `# SuperAntigravity Skills` marker in your `GEMINI.md`, it will warn you and skip that step. This can happen if you manually removed the block or never completed a full install.

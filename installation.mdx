@@ -41,7 +41,7 @@ After the script completes, restart Antigravity. Skills, workflows, and agents l
     explicit workflow controls.
   </Step>
   <Step title="Install agents">
-    6 specialist agent definitions are copied to
+    8 specialist agent definitions are copied to
     `~/.gemini/antigravity/agents/`. Agents cover code review, architecture,
     security, research, mentoring, and more.
   </Step>
@@ -57,12 +57,24 @@ After the script completes, restart Antigravity. Skills, workflows, and agents l
 When the install completes successfully, your terminal will show output similar to:
 
 ```bash
-Installing SuperAntigravity...
-✓ Repository cloned
-✓ 19 skills installed → ~/.gemini/antigravity/skills/
-✓ 16 workflows installed → ~/.gemini/antigravity/global_workflows/
-✓ 6 agents installed → ~/.gemini/antigravity/agents/
-✓ GEMINI.md updated
+[superantigravity] Installing SuperAntigravity...
+[superantigravity] Downloading...
+[superantigravity] Installing skills...
+  ✓ brainstorming
+  ✓ writing-plans
+  ...
+[superantigravity] Installing workflows...
+[superantigravity] Installing agents...
+[superantigravity] Updating ~/.gemini/GEMINI.md...
+[superantigravity] Bootstrap rules added
+
+✓ SuperAntigravity installed!
+
+  19 skills   → ~/.gemini/antigravity/skills/
+  16 workflows → ~/.gemini/antigravity/global_workflows/
+   6 agents   → ~/.gemini/antigravity/agents/
+
+Restart Antigravity and type /brainstorm to get started.
 ```
 
 ## Install marker file
