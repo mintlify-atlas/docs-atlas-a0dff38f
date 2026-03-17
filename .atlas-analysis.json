@@ -1,0 +1,154 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "SuperAntigravity",
+  "projectDescription": "A one-command installer that supercharges Google Antigravity IDE with 19 auto-triggered skills, 16 slash commands, and 6 specialist agents for a complete AI-assisted development workflow.",
+  "theme": "aspen",
+  "primaryColor": "#242b2c",
+  "lightColor": "#040404",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "The Workflow",
+            "pages": [
+              "workflow/overview",
+              "workflow/brainstorm",
+              "workflow/plan",
+              "workflow/implement",
+              "workflow/review",
+              "workflow/git"
+            ]
+          },
+          {
+            "group": "Skills",
+            "pages": [
+              "skills/overview",
+              "skills/brainstorming",
+              "skills/writing-plans",
+              "skills/executing-plans",
+              "skills/test-driven-development",
+              "skills/systematic-debugging",
+              "skills/verification-before-completion",
+              "skills/deep-research",
+              "skills/architecture-design",
+              "skills/security-review",
+              "skills/performance-optimization",
+              "skills/confidence-check",
+              "skills/browser-agent",
+              "skills/dependency-management"
+            ]
+          },
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/overview",
+              "commands/brainstorm",
+              "commands/plan",
+              "commands/implement",
+              "commands/research",
+              "commands/build",
+              "commands/test",
+              "commands/git",
+              "commands/analyze",
+              "commands/design",
+              "commands/troubleshoot",
+              "commands/explain",
+              "commands/improve",
+              "commands/review",
+              "commands/cleanup",
+              "commands/document",
+              "commands/estimate"
+            ]
+          },
+          {
+            "group": "Agents",
+            "pages": [
+              "agents/overview",
+              "agents/code-reviewer",
+              "agents/backend-architect",
+              "agents/frontend-architect",
+              "agents/security-engineer",
+              "agents/deep-research",
+              "agents/system-architect",
+              "agents/socratic-mentor",
+              "agents/repo-index"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/conversation-modes",
+              "configuration/customizing",
+              "configuration/uninstall"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "19 auto-triggered skills that fire automatically when task context matches",
+    "16 slash commands for explicit workflow control",
+    "6 specialist agents (code-reviewer, backend-architect, frontend-architect, security-engineer, deep-research, system-architect)",
+    "Complete brainstorm → plan → implement → review → ship pipeline",
+    "Test-driven development enforced as the default implementation approach",
+    "One-command install via curl | bash",
+    "Planning Mode and Fast Mode conversation optimization",
+    "Mandatory skill-check protocol before any action"
+  ],
+  "publicApiSurface": [
+    "/brainstorm",
+    "/plan",
+    "/implement",
+    "/research",
+    "/build",
+    "/test",
+    "/git",
+    "/analyze",
+    "/design",
+    "/troubleshoot",
+    "/explain",
+    "/improve",
+    "/review",
+    "/cleanup",
+    "/document",
+    "/estimate",
+    "/business-panel",
+    "/spec-panel",
+    "/recommend",
+    "skill: brainstorming",
+    "skill: writing-plans",
+    "skill: executing-plans",
+    "skill: subagent-driven-development",
+    "skill: test-driven-development",
+    "skill: systematic-debugging",
+    "skill: verification-before-completion",
+    "skill: requesting-code-review",
+    "skill: receiving-code-review",
+    "skill: finishing-a-development-branch",
+    "skill: dispatching-parallel-agents",
+    "skill: writing-skills",
+    "skill: deep-research",
+    "skill: performance-optimization",
+    "skill: security-review",
+    "skill: architecture-design",
+    "skill: confidence-check",
+    "skill: browser-agent",
+    "skill: dependency-management",
+    "agent: code-reviewer",
+    "agent: backend-architect",
+    "agent: frontend-architect",
+    "agent: security-engineer",
+    "agent: deep-research",
+    "agent: system-architect",
+    "agent: socratic-mentor",
+    "agent: repo-index"
+  ]
+}
