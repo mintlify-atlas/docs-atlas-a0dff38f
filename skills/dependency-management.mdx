@@ -1,0 +1,136 @@
+---
+title: "Dependency management"
+description: "Deliberate evaluation criteria for every dependency decision — add deliberately, update strategically, audit regularly"
+---
+
+Every dependency is a commitment to its maintenance, security surface, and upgrade path. The dependency-management skill brings deliberate criteria to every package decision — whether adding, updating, auditing, or removing.
+
+## When this skill fires
+
+The skill description reads: *"Use when adding new dependencies, deciding whether to update packages, running security audits on dependencies, evaluating library alternatives, or encountering outdated or vulnerable packages."*
+
+Specific triggers:
+- Adding a new package or library to a project
+- Security audit warnings (`npm audit`, `pip-audit`, `cargo audit`, etc.)
+- Batch dependency update time
+- Major version upgrade decisions
+- Choosing between alternative libraries
+- Lockfile merge conflicts
+- Questioning whether a package is still maintained
+
+**Do not use for:**
+- Internal module or code organization (that's refactoring)
+- Learning a single package's API (that's research)
+
+## What it does
+
+The skill applies structured decision trees to four types of dependency work: adding a new package, updating an existing one, responding to security alerts, and removing a package. Each path has specific criteria and workflows.
+
+## Adding a new package
+
+Evaluate every new dependency against all seven criteria:
+
+| Criterion | Question | Red flag |
+|---|---|---|
+| **Necessity** | Can stdlib or existing deps do this? | Adding a package for 10 lines of code |
+| **Maintenance** | Last commit? Issue/PR response time? | 12+ months inactive, unanswered issues |
+| **Community** | Weekly downloads, stars, forks? | Very low usage, single maintainer |
+| **License** | Compatible with project license? | GPL in a commercial project (license contamination) |
+| **Size** | Bundle size? Transitive dependency count? | Massive dep tree for a small task |
+| **Security** | Known CVEs? Clean audit? | Active security vulnerabilities |
+| **Alternatives** | Better or lighter alternative available? | Picking the first result without evaluating |
+
+**Rule:** If a package fails two or more criteria, find an alternative or write it yourself.
+
+## Updating existing packages
+
+| Update type | Strategy | Risk |
+|---|---|---|
+| **Patch** (x.x.Z) | Update immediately, run test suite | Low |
+| **Minor** (x.Y.0) | Read changelog, update, test | Medium |
+| **Major** (X.0.0) | Breaking change analysis, migration plan, test on separate branch | High |
+
+**Workflow for batch updates:**
+
+<Steps>
+  <Step title="Update patch versions">
+    Update all patch versions at once. Run the full test suite. If passing, commit.
+  </Step>
+  <Step title="Update minor versions one by one">
+    Update one minor version, run tests after each. Do not batch minor updates.
+  </Step>
+  <Step title="Tackle major versions individually">
+    Each major version gets its own feature branch. Perform breaking change analysis and write a migration plan before updating.
+  </Step>
+</Steps>
+
+<Warning>
+Never batch major updates together — isolate each one. When something breaks, you need to know which upgrade caused it.
+</Warning>
+
+## Security urgency matrix
+
+| Severity | Exploit exists? | Action | Timeframe |
+|---|---|---|---|
+| Critical | Yes | Update immediately or apply workaround | Hours |
+| Critical | No | Priority update | 1–2 days |
+| High | — | Update within sprint | 1 week |
+| Medium/Low | — | Add to next update cycle | Planned |
+
+When a security audit reports vulnerabilities:
+1. Run the audit tool for your ecosystem
+2. Classify each finding using the matrix above
+3. Address critical and exploitable issues before any other work
+4. Document accepted risks for findings you cannot immediately resolve
+
+## Lockfile and pinning rules
+
+- Always commit lockfiles (`package-lock.json`, `yarn.lock`, `poetry.lock`, `Cargo.lock`)
+- Pin exact versions for production application dependencies
+- Use ranges only for libraries (not applications)
+- Never manually edit lockfiles — use package manager commands
+- After resolving lockfile merge conflicts, always run install to regenerate
+
+## Removing a dependency
+
+Before removing any package:
+1. Search the codebase for all imports and usages
+2. Check whether other dependencies rely on it transitively
+3. Remove the import statements and package reference, then run the full test suite
+4. Verify the lockfile is cleanly regenerated after removal
+
+## Common mistakes
+
+| Mistake | Reality |
+|---|---|
+| "Popular package is safe" | Popularity does not equal security. `event-stream` was compromised at 2M weekly downloads. |
+| "Lockfile commit is unnecessary" | Without a lockfile, builds are not reproducible. |
+| "Update everything at once" | Batch updates make it impossible to isolate the source of a breakage. |
+| "Major update is just a version number" | Breaking change = potential refactoring required. |
+| "Dev dependency security doesn't matter" | Supply chain attacks target build processes. |
+| "Add a package instead of writing 10 lines" | Every package adds attack surface and maintenance burden. |
+
+## Example scenario
+
+You receive: `npm audit found 2 vulnerabilities (1 critical, 1 moderate)`.
+
+The dependency-management skill fires. The agent:
+1. Runs `npm audit --json` to get full details on both vulnerabilities
+2. Classifies: critical vulnerability in `lodash` (prototype pollution, exploit exists) — action: update immediately; moderate in `debug` (ReDoS, no known exploit) — add to next update cycle
+3. Updates `lodash` on its own branch, runs full test suite, confirms passing
+4. Documents the moderate vulnerability as accepted risk with a note for the next update cycle
+5. Commits the `lodash` update with: "security: update lodash to 4.17.21 (prototype pollution CVE-2021-23337)"
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Security review" href="/skills/security-review">
+    Covers OWASP A06 (vulnerable and outdated components) as part of the full security checklist.
+  </Card>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    When a dependency update introduces a regression, systematic debugging governs how to isolate it.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Confirms dependency changes do not break the build before marking the update complete.
+  </Card>
+</CardGroup>

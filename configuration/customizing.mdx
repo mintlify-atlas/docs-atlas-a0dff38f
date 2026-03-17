@@ -1,0 +1,119 @@
+---
+title: "Customizing SuperAntigravity"
+description: "Editing skills, workflows, and agents to fit your workflow"
+---
+
+Everything SuperAntigravity installs is plain Markdown files on your filesystem. You can edit any of them directly — no build step, no tooling required.
+
+## Where files are installed
+
+The installer places files into three directories under `~/.gemini/antigravity/`:
+
+| Directory | What lives there |
+|-----------|------------------|
+| `~/.gemini/antigravity/skills/` | One subdirectory per skill, each containing a `SKILL.md` |
+| `~/.gemini/antigravity/global_workflows/` | One `.md` file per slash command workflow |
+| `~/.gemini/antigravity/agents/` | One `.md` file per specialist agent |
+
+A fourth file, `~/.gemini/GEMINI.md`, holds the bootstrap block that instructs the agent to use SuperAntigravity at the start of every session.
+
+## Editing an existing skill
+
+Each skill is a directory with a single `SKILL.md` file. The frontmatter controls when Antigravity loads it; the body controls what the agent does.
+
+<Steps>
+  <Step title="Find the skill">
+    Navigate to the skill's directory:
+
+    ```bash
+    ls ~/.gemini/antigravity/skills/
+    ```
+
+    Each subdirectory is a skill. Open the one you want to change.
+  </Step>
+
+  <Step title="Edit SKILL.md">
+    Open `~/.gemini/antigravity/skills/<skill-name>/SKILL.md` in any editor and change the content. The `description` field in the frontmatter controls when the skill auto-triggers — edit it to change the matching behavior.
+  </Step>
+
+  <Step title="Restart Antigravity">
+    Antigravity reads skills at the start of each session. Restart it for your changes to take effect.
+  </Step>
+</Steps>
+
+## Skill frontmatter format
+
+Every `SKILL.md` starts with a YAML frontmatter block:
+
+```markdown
+---
+name: your-skill-name
+description: Use when the user does X — triggers on Y context
+---
+
+# Skill title
+
+Skill body goes here...
+```
+
+| Field | Purpose |
+|-------|---------|
+| `name` | Unique identifier for the skill |
+| `description` | Antigravity reads this to decide whether to load the skill. Write it to match the situations where you want the skill to fire. |
+
+<Note>
+  The `description` field is the most important part of a skill. Antigravity uses it to determine whether the skill applies to the current task. A well-written description means the skill fires at the right time; a vague one means it fires too often or not at all.
+</Note>
+
+## Creating a new skill
+
+SuperAntigravity ships with a `writing-skills` skill that teaches the skill format and guides you through creating new ones. To use it, start a conversation in Antigravity and ask it to create a new skill — the `writing-skills` skill will load automatically and walk you through the process.
+
+You can also create a skill manually:
+
+1. Create a new directory under `~/.gemini/antigravity/skills/your-skill-name/`
+2. Add a `SKILL.md` file with valid frontmatter and body content
+3. Restart Antigravity
+
+## Editing workflows
+
+Slash commands like `/brainstorm` and `/implement` are backed by workflow files in `~/.gemini/antigravity/global_workflows/`. Each file is a `.md` named after the command.
+
+To change what `/implement` does, edit `~/.gemini/antigravity/global_workflows/implement.md`. Changes take effect after restarting Antigravity.
+
+```bash
+ls ~/.gemini/antigravity/global_workflows/
+# brainstorm.md  plan.md  implement.md  research.md  build.md ...
+```
+
+## Customizing agents
+
+Specialist agents live in `~/.gemini/antigravity/agents/`. Each agent is a `.md` file describing the agent's role, behavior, and constraints.
+
+```bash
+ls ~/.gemini/antigravity/agents/
+# code-reviewer.md  backend-architect.md  frontend-architect.md ...
+```
+
+Edit any agent file to change how it reasons, what it focuses on, or how it formats output. Restart Antigravity after saving.
+
+## The GEMINI.md bootstrap block
+
+During install, a block is appended to `~/.gemini/GEMINI.md` starting with the marker `# SuperAntigravity Skills`. This block is what makes SuperAntigravity always-on: Antigravity reads `GEMINI.md` at the start of every session, so the agent always knows it has skills and must check them before acting.
+
+The block looks like this (abbreviated):
+
+```markdown
+# SuperAntigravity Skills
+
+You have superantigravity installed — a complete workflow and specialist skills framework.
+
+## MANDATORY: Check Skills Before Acting
+...
+```
+
+You can edit this block to change global agent behavior — for example, to adjust the skill priority rules or the red-flags table. It is plain Markdown and behaves like any other instruction in `GEMINI.md`.
+
+<Warning>
+  If you edit the `# SuperAntigravity Skills` block manually and then run the installer again, it will detect the marker and skip re-adding the block. Run `uninstall.sh` first to remove the old block cleanly before reinstalling with a fresh copy.
+</Warning>

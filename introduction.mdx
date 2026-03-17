@@ -1,0 +1,100 @@
+---
+title: "Introduction"
+description: "Superpowers + SuperClaude for Google Antigravity IDE. One install command. Works automatically."
+---
+
+# SuperAntigravity
+
+SuperAntigravity supercharges [Google Antigravity](https://antigravity.google) with a complete AI-assisted development workflow — 19 auto-triggered skills, 16 slash commands, and 6 specialist agents — all installed with a single command.
+
+<CardGroup cols={3}>
+  <Card title="19 Auto-Triggered Skills" icon="bolt">
+    Skills fire automatically when your task context matches. No commands needed — the right behavior loads itself.
+  </Card>
+  <Card title="16 Slash Commands" icon="terminal">
+    Explicit workflow control at your fingertips. Type `/brainstorm`, `/implement`, `/review`, and more.
+  </Card>
+  <Card title="6 Specialist Agents" icon="robot">
+    Dedicated agents for code review, architecture, security, research, and mentoring.
+  </Card>
+</CardGroup>
+
+## What is SuperAntigravity?
+
+SuperAntigravity combines two proven AI workflow systems:
+
+- **[Superpowers](https://github.com/obra/superpowers)** by Jesse Vincent — a structured development pipeline (brainstorm → plan → implement → review → ship)
+- **[SuperClaude](https://github.com/NomenAK/SuperClaude)** — specialist skills for deep research, performance optimization, security review, and architecture design
+
+Together they give Google Antigravity a complete, opinionated software development process that enforces best practices automatically.
+
+## The Core Pipeline
+
+```
+/brainstorm  →  discuss + design (no code yet)
+     ↓
+/plan        →  bite-sized tasks with TDD steps
+     ↓
+/implement   →  subagent per task + code review between
+     ↓
+/review      →  validate against plan
+     ↓
+/git         →  smart commit and push
+```
+
+Every stage has a gate. You don't move forward until the gate passes.
+
+## Philosophy
+
+<CardGroup cols={2}>
+  <Card title="Design before code" icon="pencil">
+    Brainstorming is mandatory, not optional. A 15-minute design session prevents hours of rework.
+  </Card>
+  <Card title="Test first" icon="flask">
+    TDD is the iron law. Every implementation starts with a failing test.
+  </Card>
+  <Card title="Systematic over ad-hoc" icon="sitemap">
+    Process beats guessing every time. Skills provide structured approaches to every task type.
+  </Card>
+  <Card title="Evidence over claims" icon="magnifying-glass">
+    Run verification before declaring done. The verification-before-completion skill enforces this.
+  </Card>
+</CardGroup>
+
+## Quick Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/install.sh | bash
+```
+
+Restart Antigravity. That's it. Skills trigger automatically — no configuration required.
+
+## What Gets Installed
+
+| Component | Count | Location |
+|-----------|-------|----------|
+| Skills | 19 | `~/.gemini/antigravity/skills/` |
+| Workflows | 16 | `~/.gemini/antigravity/global_workflows/` |
+| Agents | 6 | `~/.gemini/antigravity/agents/` |
+| Bootstrap rules | 1 | `~/.gemini/GEMINI.md` |
+
+<Note>
+SuperAntigravity requires [Google Antigravity](https://antigravity.google) and `git` to be installed on your system.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Step-by-step install guide with prerequisites
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Your first workflow: brainstorm to shipped feature
+  </Card>
+  <Card title="The Workflow" icon="arrow-right" href="/workflow/overview">
+    Deep dive into the 5-stage development pipeline
+  </Card>
+  <Card title="Skills Reference" icon="book" href="/skills/overview">
+    Every auto-triggered skill explained
+  </Card>
+</CardGroup>

@@ -1,0 +1,98 @@
+---
+title: "/test"
+description: "Run tests with coverage analysis and systematic failure diagnosis."
+---
+
+## What it does
+
+`/test` runs your full test suite, reports results with coverage percentages per file, flags files below the 80% minimum threshold, and diagnoses failures systematically before attempting any fix.
+
+## When to use
+
+Use `/test` to verify behavior after implementation, check coverage before shipping, or investigate test failures. It is also used as the verification step inside [`/implement`](/commands/implement).
+
+## Prerequisites
+
+- A test framework configured in the project
+- Dependencies installed
+
+## Conversation mode
+
+**Fast Mode** — recommended for direct test execution.
+
+## What happens
+
+<Steps>
+  <Step title="Run full test suite to establish baseline">
+    The complete test suite runs first to capture the full picture before any analysis.
+  </Step>
+  <Step title="Report results">
+    Results are reported as: total tests, passed, failed, skipped, and coverage % per file. For failures, exact error messages are shown — not summaries.
+  </Step>
+  <Step title="Flag coverage gaps">
+    Files below 80% coverage are flagged. High-risk code (auth, payments, data mutations) is expected at 95%+.
+  </Step>
+  <Step title="Diagnose failures">
+    On test failure, the `systematic-debugging` skill is loaded to investigate root cause. The fix is never attempted without a diagnosis. For mass failures (>20 tests), the failure pattern is identified first — the root cause is fixed once rather than test-by-test.
+  </Step>
+  <Step title="Verify before declaring done">
+    The `verification-before-completion` skill runs before tests are declared fixed. Tests are actually run — not claimed to pass.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `test-driven-development` — RED-GREEN-REFACTOR process
+- `systematic-debugging` — loaded on test failure to investigate root cause
+- `verification-before-completion` — final check before declaring tests fixed
+
+## Coverage standards
+
+80% is the minimum floor for shipping — it is not a target. Do not write tests purely to increase coverage numbers.
+
+| Code type | Minimum coverage |
+|---|---|
+| General code | 80% |
+| Auth, payments, data mutations | 95%+ |
+
+## Example
+
+```bash
+/test
+```
+
+Antigravity runs the test suite and outputs:
+
+```
+Test run: 2026-03-17 14:00 UTC
+Command: pytest tests/ -v --cov=src --cov-report=term
+
+Results: 47 passed | 0 failed | 2 skipped
+Coverage: 84.3% overall
+  src/auth.py: 97.2% ✓
+  src/user.py: 81.4% ✓
+  src/notifications.py: 61.0% ⚠ BELOW THRESHOLD
+
+Action required: notifications.py below 80% — add tests before shipping
+```
+
+<Warning>
+If more than 20 tests fail simultaneously (e.g., after a major dependency upgrade), Antigravity will not fix them test-by-test. It first identifies the common root cause, fixes it once, then re-runs.
+</Warning>
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/implement" href="/commands/implement">
+    /test is embedded in the /implement workflow's TDD cycle.
+  </Card>
+  <Card title="/build" href="/commands/build">
+    Run /build after tests pass to verify the full production build.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    For test failures that need the full four-phase debugging process.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    Review code quality and test coverage as part of the pre-ship checklist.
+  </Card>
+</CardGroup>

@@ -1,0 +1,105 @@
+---
+title: "/brainstorm"
+description: "Requirements discovery before any code — turns vague ideas into approved designs"
+---
+
+`/brainstorm` is the entry point to every new feature. It runs the brainstorming skill and adds session coordination on top: stage tracking, a hard gate against premature implementation, and a clean hand-off to `/plan`.
+
+## When to use
+
+**Use `/brainstorm` when:**
+- Starting any new feature, component, or significant change
+- You have an idea but no approved design yet
+- You want to explore 2–3 approaches before committing to one
+
+**Do not use `/brainstorm` when:**
+- A design doc already exists and is approved — go to `/plan` instead
+- You are fixing a small, well-understood bug — go to `/implement` with a confidence-check
+
+<Note>
+`/brainstorm` requires **Planning Mode** to be active in your Antigravity settings. SuperAntigravity will prompt you to enable it if it isn't.
+</Note>
+
+## Session state
+
+At the start of each session, and after each major step, SuperAntigravity outputs its current state:
+
+```
+Session: /brainstorm
+Stage: [question N of ~5 | proposing approaches | presenting design | approved]
+Design doc: [not started | in progress | saved at path]
+```
+
+This keeps you oriented — you always know how far along the design is and where the output will be saved.
+
+## Orchestration steps
+
+<Steps>
+  <Step title="Announce">
+    SuperAntigravity tells you: "Starting /brainstorm. I will not write any code until you approve the design." This sets the expectation for the session.
+  </Step>
+  <Step title="Explore project context">
+    Checks existing files, docs, and recent commits to understand what already exists. For greenfield projects this step is skipped.
+  </Step>
+  <Step title="Ensure Planning Mode">
+    Prompts you to switch to Planning Mode in Antigravity settings if it isn't already active.
+  </Step>
+  <Step title="Ask clarifying questions">
+    Asks questions one at a time to understand purpose, constraints, and success criteria. Questions stop when SuperAntigravity can restate the goal in one sentence, knows the top constraint, and understands the success criteria — typically 3–5 questions. Multiple-choice questions are preferred where possible.
+  </Step>
+  <Step title="Propose 2–3 approaches">
+    Presents multiple approaches with trade-offs, leads with its recommended option, and explains why. You choose which direction to take.
+  </Step>
+  <Step title="Present the design">
+    Walks through the design section by section — architecture, components, data flow, error handling, testing. Asks for your approval after each section so you can course-correct early rather than reviewing a large design at the end.
+  </Step>
+  <Step title="Write the design doc">
+    Saves the approved design to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commits it.
+  </Step>
+  <Step title="Gate check">
+    Confirms the design doc exists at the expected path before proceeding. This is a precondition for the next stage.
+  </Step>
+  <Step title="Transition to /plan">
+    Loads the writing-plans skill and hands off to `/plan`. This is the only skill loaded after brainstorming — no implementation skills are loaded here.
+  </Step>
+</Steps>
+
+## The hard gate
+
+If you say "just build it" or "skip the design", SuperAntigravity stops and responds:
+
+> "SuperAntigravity requires design approval before implementation. This prevents wasted effort. The design will take 10–15 minutes and saves hours of rework. Shall we continue?"
+
+This gate cannot be bypassed. An implementation action — writing any file that will be part of the product, running `npm init`, generating scaffolding — is blocked until you explicitly approve a design.
+
+<Warning>
+The hard gate applies to every project regardless of perceived simplicity. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short — a few sentences for truly simple projects — but it must exist and be approved.
+</Warning>
+
+## Handling partial approval
+
+If you approve the design with modifications, SuperAntigravity incorporates the changes, re-presents only the changed section, and continues. It does not re-present sections you already approved.
+
+## Completion criteria
+
+The brainstorm session is complete when all three conditions are met:
+
+- [ ] Design doc saved to `docs/plans/`
+- [ ] You have explicitly approved the design (acknowledgement is not enough)
+- [ ] Next step communicated — you know to run `/plan`
+
+## Skills invoked
+
+| Skill | When invoked |
+|-------|--------------|
+| brainstorming | Primary — owns the full brainstorm process |
+| deep-research | When feasibility research is needed before proposing approaches |
+| architecture-design | When the feature requires system design decisions |
+
+## What comes next
+
+After approval, SuperAntigravity transitions directly to `/plan` to create the implementation plan. The design doc produced here becomes the source of truth for the plan.
+
+<Tip>
+If you partially change your mind during `/plan` or `/implement`, the correct path is to return to `/brainstorm` for the new scope — not to silently modify the plan. This keeps the design doc and plan in sync.
+</Tip>

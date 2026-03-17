@@ -1,0 +1,116 @@
+---
+title: "/estimate"
+description: "Development estimates for tasks, features, or projects with explicit confidence levels."
+---
+
+## What it does
+
+`/estimate` breaks work into discrete components, estimates each one across design, implementation, testing, and integration phases, applies complexity multipliers for unknowns, and produces estimates with explicit confidence levels and assumptions.
+
+Estimates are informed guesses — not commitments. `/estimate` makes the assumptions and risks explicit so you can act on them.
+
+## When to use
+
+Use `/estimate` before starting a feature to communicate scope, when planning a sprint, when comparing implementation approaches, or when stakeholders need rough timelines before committing to work.
+
+## Prerequisites
+
+- A clear description of the work to estimate — vague inputs produce low-confidence estimates
+- For high-confidence estimates: run [`/research`](/commands/research) first to resolve major unknowns
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Break work into discrete components">
+    The feature or task is decomposed into concrete, estimable components. Vague work is broken down until each piece is independently estimable.
+  </Step>
+  <Step title="Estimate each component">
+    For each component: design time, implementation time, testing time, and integration time are estimated separately.
+  </Step>
+  <Step title="Apply complexity multipliers">
+    Unknowns, external dependencies, and architectural decisions that haven't been made yet are identified. Complexity multipliers are applied based on the category: simple (hours), medium (days), complex (weeks).
+  </Step>
+  <Step title="State confidence and assumptions">
+    Each estimate includes a confidence level (high/medium/low) and the key assumptions that must be true for the estimate to hold.
+  </Step>
+  <Step title="Apply buffer guidelines">
+    Buffers are applied based on confidence: 20% for high confidence, 50% for medium, 100% for low. A low-confidence estimate is a signal to break the work down further before committing.
+  </Step>
+  <Step title="State total with buffer">
+    The total is the sum of all components plus the appropriate buffer for integration and unexpected issues.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+No skills are invoked. `/estimate` is a direct workflow.
+
+## Complexity categories
+
+| Category | Timeframe | Characteristics |
+|---|---|---|
+| Simple | Hours | Well-understood, existing patterns, clear scope |
+| Medium | Days | Some unknowns, new patterns, multiple components |
+| Complex | Weeks | Significant unknowns, architectural decisions, cross-cutting concerns |
+
+## Buffer guidelines
+
+| Confidence | Buffer |
+|---|---|
+| High | 20% |
+| Medium | 50% |
+| Low | 100% (or break down further before estimating) |
+
+## Example
+
+```bash
+/estimate adding a webhook delivery system
+```
+
+Antigravity outputs:
+
+```
+Component: Queue infrastructure setup (Redis + BullMQ)
+Estimate: 0.5 days
+Confidence: high
+Assumptions: Redis already in stack, team familiar with BullMQ
+Risks: If Redis is not available, add 1 day for provisioning
+
+Component: WebhookService implementation
+Estimate: 1 day
+Confidence: medium
+Assumptions: Retry logic is exponential backoff only (no custom schedules)
+Risks: Webhook signature verification adds 0.5 days if required
+
+Component: Tests (unit + integration)
+Estimate: 1 day
+Confidence: high
+Assumptions: Test infrastructure already set up
+
+Total (before buffer): 2.5 days
+Buffer (medium confidence): 50% → +1.25 days
+Total with buffer: ~4 days
+
+Key assumption: Webhook payload format is fixed — if it needs to be configurable, re-estimate.
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/research" href="/commands/research">
+    Resolve unknowns before estimating to increase confidence levels.
+  </Card>
+  <Card title="/brainstorm" href="/commands/brainstorm">
+    Run /estimate after /brainstorm to size the approved design before committing.
+  </Card>
+  <Card title="/plan" href="/commands/plan">
+    /plan produces the task breakdown that makes estimates actionable.
+  </Card>
+  <Card title="/design" href="/commands/design">
+    Architectural decisions from /design reduce unknowns and improve estimate confidence.
+  </Card>
+</CardGroup>

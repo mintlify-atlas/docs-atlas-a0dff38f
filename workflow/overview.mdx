@@ -1,0 +1,90 @@
+---
+title: "The Workflow"
+description: "SuperAntigravity's 5-stage development pipeline"
+---
+
+SuperAntigravity structures every feature as a linear pipeline: brainstorm → plan → implement → review → git. Each stage has a hard gate — you cannot advance until the gate condition is met. This prevents rework by ensuring decisions are validated before effort is spent on them.
+
+## Pipeline diagram
+
+```
+┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
+│ /brainstorm │───▶│    /plan     │───▶│   /implement    │
+│             │    │              │    │                  │
+│ Skill:      │    │ Skill:       │    │ Skills (loop):   │
+│ brainstorm- │    │ writing-     │    │ confidence-check │
+│ ing         │    │ plans        │    │ test-driven-dev  │
+│             │    │              │    │ requesting-code- │
+│ Output:     │    │ Output:      │    │ review           │
+│ Design doc  │    │ Plan file    │    │                  │
+│ APPROVED    │    │ docs/plans/  │    │ Output: commits  │
+└─────────────┘    └──────────────┘    └────────┬────────┘
+                                                 │
+       ┌─────────────────────────────────────────┘
+       ▼
+┌─────────────┐    ┌──────────────┐
+│   /review   │───▶│    /git      │
+│             │    │              │
+│ Agent:      │    │ Skill:       │
+│ code-       │    │ (built-in)   │
+│ reviewer    │    │              │
+│             │    │ Output:      │
+│ Output:     │    │ Merged PR or │
+│ APPROVED or │    │ pushed branch│
+│ CHANGES     │    │              │
+└─────────────┘    └──────────────┘
+```
+
+## Stage reference
+
+| Stage | Command | Skill / agent | Gate | Output |
+|-------|---------|---------------|------|--------|
+| Design | `/brainstorm` | brainstorming, deep-research, architecture-design | User explicitly approves design doc | `docs/plans/*-design.md` |
+| Plan | `/plan` | writing-plans | User explicitly approves plan | `docs/plans/*-plan.md` |
+| Implement | `/implement` | confidence-check, test-driven-development, requesting-code-review | All tasks complete, all tests green | Feature commits on branch |
+| Review | `/review` | code-reviewer agent, security-engineer agent | APPROVED or APPROVED WITH SUGGESTIONS verdict | Review report |
+| Ship | `/git` | verification-before-completion, finishing-a-development-branch | Branch is clean, verification passes | Merged PR or pushed branch |
+
+## Stage gates
+
+Every transition between stages requires an explicit gate to pass. SuperAntigravity will not proceed until the condition is met.
+
+1. **Design → Plan.** You explicitly approve the design document. Acknowledging it is not enough — you must say you approve it.
+2. **Plan → Implement.** The plan file exists and every task has exact file paths and commands.
+3. **Implement → Review.** All tasks in the plan are complete and the full test suite is green.
+4. **Review → Ship.** The code-reviewer agent returns a verdict of APPROVED or APPROVED WITH SUGGESTIONS. A verdict of CHANGES REQUIRED blocks the gate.
+5. **Ship.** The verification-before-completion skill passes and the finishing-a-development-branch skill executes the merge or PR.
+
+<Note>
+Gates protect you from the most expensive mistake in software development: spending hours implementing something that was poorly defined. The 10–15 minutes a design takes consistently saves hours of rework.
+</Note>
+
+## Interrupt protocols
+
+Three situations can interrupt an in-progress pipeline:
+
+**Bug discovered mid-implementation.** SuperAntigravity loads the systematic-debugging skill, fixes the bug, adds a regression test, then resumes the plan from where it left off. It does not start a new pipeline stage.
+
+**Scope change requested.** Implementation stops immediately. The scope change returns to `/brainstorm` — it does not get silently absorbed into the current plan. The existing plan is not modified without a new approved design.
+
+**Test suite fails catastrophically (more than 20 failures).** SuperAntigravity loads the systematic-debugging skill and identifies the root cause of the mass failure before attempting individual fixes.
+
+## Explore each stage
+
+<CardGroup cols={2}>
+  <Card title="/brainstorm" icon="lightbulb" href="/workflow/brainstorm">
+    Turn vague ideas into approved designs before any code is written.
+  </Card>
+  <Card title="/plan" icon="list-check" href="/workflow/plan">
+    Write a detailed, bite-sized implementation plan before touching the codebase.
+  </Card>
+  <Card title="/implement" icon="code" href="/workflow/implement">
+    Drive feature implementation through TDD with per-task review gates.
+  </Card>
+  <Card title="/review" icon="magnifying-glass" href="/workflow/review">
+    Validate implementation against the plan using specialist agents.
+  </Card>
+  <Card title="/git" icon="code-branch" href="/workflow/git">
+    Smart git operations with pre-ship verification and safe defaults.
+  </Card>
+</CardGroup>

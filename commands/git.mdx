@@ -1,0 +1,127 @@
+---
+title: "/git"
+description: "Git operations with intelligent commit messages and safety guardrails."
+---
+
+## What it does
+
+`/git` handles git operations with a smart commit protocol that reviews actual changes, stages files selectively, and generates Conventional Commits-formatted messages. It enforces safety rules that prevent destructive operations.
+
+This is Step 5 in the core workflow — used after [`/review`](/commands/review) to commit and push completed work.
+
+## When to use
+
+Use `/git` when you're ready to commit and push completed, reviewed work. Also useful for any git operation where you want intelligent staging and commit message generation.
+
+## Prerequisites
+
+- Tests passing
+- Code reviewed (via [`/review`](/commands/review) or [`/implement`](/commands/implement)'s built-in review gate)
+- On a feature branch (not `main` or `master`)
+
+## Conversation mode
+
+Either mode works. Fast Mode is fine for mechanical commit operations.
+
+## What happens
+
+<Steps>
+  <Step title="Run git status">
+    `git status` is run to understand the full picture of what has changed.
+  </Step>
+  <Step title="Review changes with git diff">
+    `git diff` is run to review the actual changes before staging anything.
+  </Step>
+  <Step title="Stage specific files">
+    Files are staged selectively using `git add path/to/file`. `git add .` is never used blindly.
+  </Step>
+  <Step title="Generate commit message">
+    A commit message is generated following Conventional Commits format: `type(scope): short description` with an optional longer explanation of why — not what.
+  </Step>
+  <Step title="Commit and push">
+    The commit is created and pushed to the remote branch.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+No skills are invoked. `/git` is a direct workflow with built-in safety rules.
+
+## Commit message format
+
+```
+type(scope): short description
+
+Optional longer explanation of WHY, not what.
+```
+
+| Type | Use for |
+|---|---|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Code change without behavior change |
+| `test` | Test additions or changes |
+| `docs` | Documentation only |
+| `chore` | Maintenance tasks |
+
+## Safety rules
+
+<Warning>
+These operations are never performed, regardless of what you ask:
+- Force push to `main` or `master`
+- Commit secrets, `.env` files, or credentials
+- Skip pre-commit hooks with `--no-verify`
+- Amend published commits
+- Use `--force` without investigation
+</Warning>
+
+## Common operations
+
+```bash
+git status                    # What changed
+git diff                      # Review changes
+git add path/to/file          # Stage specific files
+git commit -m "feat: add X"   # Commit with message
+git log --oneline -10         # Recent history
+git stash                     # Save work temporarily
+```
+
+## Branch naming
+
+| Type | Pattern |
+|---|---|
+| Features | `feat/description` |
+| Fixes | `fix/description` |
+| Experiments | `experiment/description` |
+
+## Example
+
+```bash
+/git
+```
+
+Antigravity runs `git status`, reviews the diff, stages `src/notifications/service.ts` and `src/notifications/service.test.ts` specifically, and generates:
+
+```
+feat(notifications): add email and push notification delivery
+
+Previously all notifications were stored but never delivered.
+Adds NotificationService with email (SendGrid) and push (FCM) channels.
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/review" href="/commands/review">
+    Step 4 — validate implementation before committing.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    /implement commits after every GREEN test using the same Conventional Commits format.
+  </Card>
+  <Card title="/build" href="/commands/build">
+    Run /build before /git to ensure the production build is clean.
+  </Card>
+  <Card title="/test" href="/commands/test">
+    Verify all tests pass before committing.
+  </Card>
+</CardGroup>

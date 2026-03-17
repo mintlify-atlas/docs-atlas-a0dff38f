@@ -1,0 +1,114 @@
+---
+title: "Executing plans"
+description: "Runs a written implementation plan in batches with checkpoints and review between each batch"
+---
+
+The executing-plans skill implements a written plan systematically: load and review the plan, execute tasks in batches, report the results, and wait for feedback before continuing. It never guesses or proceeds past a blocker.
+
+## When this skill fires
+
+The skill description reads: *"Use when you have a written implementation plan to execute in a separate session with review checkpoints."*
+
+It fires when the writing-plans skill handoff completes, or when you start a new session pointing to an existing plan document.
+
+## What it does
+
+Executing-plans loads the plan, reviews it critically for gaps, then executes tasks in configurable batch sizes. After each batch, it produces a structured report and waits for feedback. If tests fail, it stops and loads the systematic-debugging skill. When all tasks are complete, it loads the finishing-a-development-branch skill.
+
+The skill announces its activation:
+
+> "I'm using the executing-plans skill to implement this plan. REQUIRED: Ensure Antigravity is set to Fast Mode for efficient execution."
+
+## How it works
+
+<Steps>
+  <Step title="Step 0: Prerequisites">
+    Before touching any code, verify:
+    - You are NOT on `main` or `master` branch (unless you have explicit user instruction)
+    - There are no uncommitted changes unrelated to this plan
+
+    If either condition is unmet, resolve it before proceeding.
+  </Step>
+  <Step title="Step 1: Load and review the plan">
+    Read the plan file completely. Review it critically — identify any questions or concerns before starting. If concerns exist, raise them with your human partner. If none, create a TodoWrite list and proceed.
+  </Step>
+  <Step title="Step 2: Execute a batch">
+    Execute tasks according to the batch size criteria:
+    - **Default:** 3 tasks per batch
+    - **Shrink to 1:** first task in a new phase, or previous batch had failures
+    - **Expand to 5:** all tasks are mechanical (file copies, config changes) with no logic
+
+    For each task: mark as in-progress, follow each step exactly, run all verifications, mark as completed.
+  </Step>
+  <Step title="Step 3: Report">
+    After each batch, produce a structured report:
+
+    ```
+    ## Batch Report
+    Tasks completed: [N-M]
+    Files changed: [list]
+    Tests: [passed X / failed Y / skipped Z]
+    Verification output:
+      [paste exact command output]
+    Ready for feedback.
+    ```
+
+    If any tests failed: do NOT mark tasks complete. Report the failure with exact test output, load `systematic-debugging`, and do not proceed to the next batch.
+  </Step>
+  <Step title="Step 4: Continue">
+    Apply any feedback, then execute the next batch. Repeat until all tasks are complete.
+  </Step>
+  <Step title="Step 5: Complete development">
+    After all tasks complete and all tests pass:
+    - Verify all tasks are marked completed
+    - Verify no BLOCKERS.md is active
+    - Load the `finishing-a-development-branch` skill
+  </Step>
+</Steps>
+
+## When to stop and ask for help
+
+Stop immediately — do not guess — when:
+- A dependency is missing mid-batch
+- The plan has a critical gap that prevents starting
+- An instruction is unclear
+- Verification fails repeatedly
+
+<Warning>
+If two or more messages pass without acknowledgment of a STOP, document the blocking question in a `BLOCKERS.md` file, mark the task as blocked, and skip to the next non-dependent task if one exists.
+</Warning>
+
+## Blocker handling
+
+When blocked and the session ends without a human response:
+1. Write `BLOCKERS.md` with the blocking question
+2. Mark the plan task as `blocked`
+3. Skip to the next non-dependent task if one exists
+4. If no unblocked tasks remain, leave a clear status note and stop
+
+## Example scenario
+
+You have a `docs/plans/2026-03-17-notifications.md` with 8 tasks. The executing-plans skill:
+1. Checks you're on the `feature/notifications` branch with no unrelated changes
+2. Reviews the plan, notes a question about the polling interval, asks you to confirm
+3. Executes Tasks 1–3 (first batch), reports: 3 tasks completed, all tests passing
+4. Executes Tasks 4–6, reports: 3 tasks completed, 1 test failing — stops and loads systematic-debugging
+5. After fix, executes Tasks 7–8, reports: 2 tasks completed, all tests passing
+6. Loads finishing-a-development-branch
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Writing plans" href="/skills/writing-plans">
+    Creates the plan document that this skill executes.
+  </Card>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    Fires automatically when a batch produces test failures.
+  </Card>
+  <Card title="Test-driven development" href="/skills/test-driven-development">
+    The TDD cycle each task in the plan follows.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Applied before the final completion claim at the end of all tasks.
+  </Card>
+</CardGroup>

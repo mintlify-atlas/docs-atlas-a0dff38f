@@ -1,0 +1,100 @@
+---
+title: "Brainstorming"
+description: "Explores user intent, requirements, and design through collaborative dialogue before any implementation begins"
+---
+
+The brainstorming skill turns ideas into fully formed designs through collaborative dialogue. It fires before any creative work and enforces a hard gate: no code is written until a design is presented and approved.
+
+## When this skill fires
+
+The skill description reads: *"You MUST use this before any creative work — creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."*
+
+This means it fires when you say things like:
+- "Let's build a login feature"
+- "Add a dashboard to the app"
+- "I want to create a new API endpoint"
+- "Let's refactor the payment module"
+
+<Warning>
+This skill applies to every project regardless of perceived simplicity. A todo list, a single-function utility, a config change — all of them. Simple projects are where unexamined assumptions cause the most wasted work.
+</Warning>
+
+## What it does
+
+Brainstorming guides you through a structured discovery process: understand the current project, ask targeted clarifying questions, propose 2–3 approaches with trade-offs, present a design for approval, write the design document, then hand off to the writing-plans skill. It does not write a single line of production code.
+
+The hard gate is announced explicitly at the start:
+
+> "Design HARD-GATE: I will not write code or scaffold files until you approve this design."
+
+## How it works
+
+<Steps>
+  <Step title="Explore project context">
+    Check existing files, docs, and recent commits to understand what already exists before asking any questions. For greenfield projects with no existing files, skip this step and start directly with clarifying questions.
+  </Step>
+  <Step title="Ensure Planning Mode">
+    Prompt you to switch Antigravity to **Planning Mode** if not already active. This phase requires deep thinking, not fast execution.
+  </Step>
+  <Step title="Ask clarifying questions">
+    Ask one question at a time — never multiple at once. Prefer multiple-choice questions when possible. The goal is to understand: purpose, constraints, and success criteria. Stop at 3–5 questions once you can restate the goal in one sentence, know the top constraint, and understand the success criteria.
+  </Step>
+  <Step title="Propose 2–3 approaches">
+    Present multiple approaches with trade-offs. Lead with the recommended option and explain why. Never propose a single option without alternatives.
+  </Step>
+  <Step title="Present the design">
+    Walk through the design section by section — architecture, components, data flow, error handling, testing — and ask after each section whether it looks right. Scale each section to its complexity.
+  </Step>
+  <Step title="Incorporate feedback">
+    If you approve with modifications: incorporate the changes, re-present only the changed section, then continue. Unchanged sections are not re-presented.
+  </Step>
+  <Step title="Write design document">
+    Save the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md` and commit it to git.
+  </Step>
+  <Step title="Transition to writing-plans">
+    Load the writing-plans skill to create a detailed implementation plan. This is the only skill loaded after brainstorming — no other implementation skill is triggered.
+  </Step>
+</Steps>
+
+<Note>
+The terminal state is loading the writing-plans skill. If the agent loads any other skill (frontend-design, mcp-builder, etc.) after brainstorming, that is incorrect behavior.
+</Note>
+
+## Key principles
+
+- **One question at a time** — Never overwhelm with multiple questions in a single message
+- **YAGNI ruthlessly** — Remove unnecessary features from every design
+- **Incremental validation** — Present the design in sections and get approval before moving on
+- **Multiple-choice preferred** — Easier to answer than open-ended questions when possible
+
+## Example scenario
+
+You say: "I want to add user notifications to the app."
+
+The brainstorming skill fires. The agent:
+1. Checks existing code for any notification-related files
+2. Asks: "What types of notifications do you need — in-app, email, or both?"
+3. After your answer: "Do users need to configure notification preferences, or is it all-on for now?"
+4. After 3–4 questions, proposes: Option A (DB polling), Option B (message queue), Option C (SSE), with trade-offs
+5. Presents design sections one at a time, adjusting based on your feedback
+6. Saves `docs/plans/2026-03-17-notifications-design.md`
+7. Loads the writing-plans skill
+
+No code has been written. The design is approved and documented.
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Writing plans" href="/skills/writing-plans">
+    The next step after brainstorming — converts the approved design into a task-by-task implementation plan.
+  </Card>
+  <Card title="Architecture design" href="/skills/architecture-design">
+    Fires during brainstorming when the task involves significant system-wide design decisions.
+  </Card>
+  <Card title="Deep research" href="/skills/deep-research">
+    Fires during brainstorming when comparing options requires current external information.
+  </Card>
+  <Card title="Confidence check" href="/skills/confidence-check">
+    Verifies readiness before implementation begins after the plan is written.
+  </Card>
+</CardGroup>

@@ -1,0 +1,135 @@
+---
+title: "Deep research"
+description: "Systematic multi-source research before acting on unknowns — plan searches, evaluate source quality, synthesize findings with confidence levels"
+---
+
+The deep-research skill governs how to gather information rigorously before making technical decisions. It prevents acting on assumptions, single sources, or stale training data.
+
+## When this skill fires
+
+The skill description reads: *"Use when a task requires gathering information from external sources, researching unfamiliar technologies, validating technical approaches, or answering questions that need current web knowledge before implementation."*
+
+Specific triggers:
+- Starting work on an unfamiliar library, framework, or API
+- Validating a technical approach before committing to it
+- Comparing options and evaluating trade-offs
+- Answering questions that require current information
+- Verifying security practices or compatibility
+
+## What it does
+
+Deep research follows a five-step process: plan searches first (before executing any), execute in parallel where possible, evaluate source quality, synthesize findings with explicit confidence levels, and flag any uncertainty. It distinguishes between training-data knowledge and actually researched knowledge.
+
+<Note>
+The skill description explicitly states: "Never guess when you can verify. Plan your searches, execute in parallel where possible, synthesize before concluding."
+</Note>
+
+## How it works
+
+<Steps>
+  <Step title="Plan searches first">
+    Before executing any search, list the specific questions you need to answer. Identify 3–5 targeted search queries that cover different angles of the problem. Do not start searching until the plan is written.
+  </Step>
+  <Step title="Execute searches in parallel">
+    Run multiple searches simultaneously where possible. Prefer official documentation and primary sources over secondary sources.
+  </Step>
+  <Step title="Evaluate source quality">
+    Apply this hierarchy:
+    - Official docs > tutorials > blog posts > forums
+    - Recent (within 1–2 years) > older for fast-moving tech
+    - Multiple sources agreeing > single source
+  </Step>
+  <Step title="Synthesize findings">
+    Reconcile conflicting information. Note gaps. Present a clear answer with confidence level (high/medium/low) and key sources.
+  </Step>
+  <Step title="Flag uncertainty">
+    If research is inconclusive, say so explicitly: "I found X but couldn't verify Y — recommend checking Z."
+  </Step>
+</Steps>
+
+## What counts as a key claim
+
+A claim is "key" — and requires at least 2 corroborating sources — if any of these are true:
+
+- **(a) It directly informs a technical decision** — the claim is the basis for choosing one approach over another
+- **(b) It contradicts a common assumption** — the claim overturns something a developer would naturally assume to be true
+- **(c) The implementation depends on it being correct** — if the claim is wrong, the implementation breaks or has to be redesigned
+
+Non-key claims require 1 source.
+
+## Research quality checklist
+
+Before acting on findings, 4 out of 5 items must be checked:
+
+- [ ] Searched official documentation first
+- [ ] Found at least 2 corroborating sources for key claims
+- [ ] Checked publication dates for currency
+- [ ] Noted any contradictions between sources
+- [ ] Stated confidence level in findings
+
+If fewer than 4 items are checked, gather more sources before proceeding. The skill states this explicitly: "Research quality check: 3/5. Gathering additional sources before proceeding."
+
+## Conflict resolution
+
+When same-level sources conflict:
+
+1. Note the conflict explicitly: "Sources conflict on this point."
+2. State both positions: "Source A says X. Source B says Y."
+3. Cap confidence at medium — do not present conflicting information as high confidence
+4. Recommend resolution: "Recommend testing this directly" or "Check the changelog between these versions."
+
+Do not silently pick one side and present it as settled.
+
+## Output format
+
+Present research as:
+1. **Question answered**
+2. **Finding** (the answer)
+3. **Confidence** (high/medium/low)
+4. **Sources** (URLs or doc sections)
+5. **Caveats** (what you couldn't verify)
+
+## Error path: sources inaccessible
+
+If all sources are inaccessible:
+1. State this explicitly with the reason (no internet, rate limited, paywalled)
+2. Share what training data says about the topic
+3. Flag confidence as low: this is training-data knowledge, not researched knowledge
+4. Recommend the user verify against current official documentation before acting
+
+<Warning>
+Do not present training-data knowledge as researched knowledge. They are different things.
+</Warning>
+
+## Example scenario
+
+You need to decide whether Redis is suitable for session storage at 10k concurrent users.
+
+The deep-research skill fires. The agent:
+1. Plans queries: Redis session storage best practices, Redis performance benchmarks, ioredis connection pooling, Redis vs in-memory comparison, Redis official docs on TTL
+2. Runs all 5 searches in parallel
+3. Evaluates sources: redis.io (Tier 1), nodebestpractices repo (Tier 2), benchmark article (Tier 3)
+4. Checks the quality checklist: 5/5 — proceeds
+5. Synthesizes: Redis is suitable (high confidence). Cluster mode caveat (medium confidence — one source). Pool size recommendation (medium confidence — single benchmark)
+6. Outputs structured finding with sources and caveats
+
+## Integration with other skills
+
+Output from deep-research is consumed by:
+- **Brainstorming** — findings inform whether a proposed approach is viable before ideation continues
+- **Architecture design** — findings populate the trade-off analysis for each architectural option
+- **Confidence check** — successful research raises the Context dimension score
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Architecture design" href="/skills/architecture-design">
+    Uses deep-research findings to populate trade-off analysis for architectural options.
+  </Card>
+  <Card title="Confidence check" href="/skills/confidence-check">
+    Deep research raises the Context score in the confidence check, enabling implementation to proceed.
+  </Card>
+  <Card title="Browser agent" href="/skills/browser-agent">
+    For verifying live web app behavior — distinct from research on static documentation.
+  </Card>
+</CardGroup>

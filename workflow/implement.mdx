@@ -1,0 +1,111 @@
+---
+title: "/implement"
+description: "Feature implementation through TDD with review gates"
+---
+
+`/implement` orchestrates feature implementation task by task, following the plan produced by `/plan`. Each task goes through a confidence check, a full TDD cycle, a commit, and a code review before moving to the next task. The loop continues until all plan tasks are complete.
+
+## Prerequisites
+
+Before starting `/implement`, all four conditions must be met:
+
+- Approved design doc exists at `docs/plans/*-design.md` — if not, run `/brainstorm` first
+- Implementation plan exists at `docs/plans/*-plan.md` — if not, run `/plan` first
+- You are on a feature branch (not `main` or `master`)
+- **Fast Mode** is active in your Antigravity settings
+
+## Session state
+
+At the start of each task, SuperAntigravity outputs its current state:
+
+```
+Session: /implement
+Plan: [path to plan file]
+Task: [N of M] — [task name]
+Confidence: [score]/30
+Status: [confidence-check | RED phase | GREEN phase | review | complete]
+```
+
+You can always see which task is in progress, the confidence score, and which phase of the TDD cycle is active.
+
+## Orchestration flow
+
+<Steps>
+  <Step title="Load the plan">
+    SuperAntigravity reads the plan file at `docs/plans/*-plan.md` before running any confidence check. A confidence check that doesn't reference the plan's specific tasks and file paths is invalid.
+  </Step>
+  <Step title="Confidence check (score ≥ 27 required)">
+    SuperAntigravity runs the confidence-check skill against the current task. A score of 27 or higher out of 30 is required to proceed. If confidence is below 27, see the section below on what happens.
+  </Step>
+  <Step title="RED phase — write the failing test">
+    The test-driven-development skill writes one minimal test for the behavior being implemented. The test must be run and confirmed to fail before any implementation code is written.
+  </Step>
+  <Step title="Minimal implementation">
+    Writes the simplest possible code to make the failing test pass. Nothing beyond what the test requires.
+  </Step>
+  <Step title="GREEN phase — verify the test passes">
+    Runs the test and confirms it passes. Also confirms no other tests have broken. Output must be pristine — no errors or warnings.
+  </Step>
+  <Step title="Commit">
+    Commits immediately after the GREEN phase. Message format: `test: [what behavior is now tested]`. Never accumulates more than one GREEN test before committing.
+  </Step>
+  <Step title="Code review">
+    Loads the requesting-code-review skill to review the task's implementation against the plan. Identified issues are addressed before moving to the next task.
+  </Step>
+  <Step title="Next task (repeat)">
+    Returns to the confidence check for the next task. The loop continues until all plan tasks are complete.
+  </Step>
+  <Step title="Verification before completion">
+    After all tasks are done, loads the verification-before-completion skill to confirm the full implementation matches the plan's requirements.
+  </Step>
+  <Step title="Finishing the branch">
+    Loads the finishing-a-development-branch skill to present the merge or PR options.
+  </Step>
+</Steps>
+
+## Commit cadence
+
+Super Antigravity commits after every GREEN test — no exceptions.
+
+```
+Commit message format: test: [what behavior is now tested]
+```
+
+If a commit fails, SuperAntigravity stops immediately. It does not run another test. It diagnoses the commit failure first (loading systematic-debugging if needed), then resolves it before continuing. GREEN tests never accumulate while a commit is pending.
+
+<Warning>
+Never accumulate more than one GREEN test before committing. Accumulating commits makes it harder to bisect bugs and blurs the connection between tests and the behavior they verify.
+</Warning>
+
+## When confidence is below 27
+
+If the confidence check returns a score below 27, SuperAntigravity announces:
+
+```
+Confidence check failed: [dimension] scored [X].
+Gap: [specific unknown].
+Action: [reading files | running research | asking user]
+```
+
+It then attempts to fill the gap — by reading files, doing research, or asking you. If two iterations of gap-filling do not raise the score to 27 or higher, SuperAntigravity stops and announces the specific remaining gap, then waits for your input. Implementation does not begin until the score reaches 27+.
+
+## When a test fails after implementation
+
+If a test fails after implementation code has been written, SuperAntigravity loads the systematic-debugging skill. It does not retry without diagnosis. The debugging skill identifies the root cause before any fix is attempted.
+
+## Skills used
+
+| Skill | Role |
+|-------|------|
+| confidence-check | Validates readiness before each task (score ≥ 27 required) |
+| test-driven-development | Drives the RED-GREEN-REFACTOR cycle per task |
+| systematic-debugging | Loaded when a test fails unexpectedly or a commit fails |
+| requesting-code-review | Reviews each task's implementation against the plan |
+| verification-before-completion | Final check before marking implementation done |
+| finishing-a-development-branch | Handles merge, PR, or discard at the end |
+
+## Interrupt protocols
+
+**Bug discovered mid-task.** Systematic-debugging is loaded. The bug is fixed and a regression test is added. Then the plan resumes from where it left off — the current task is not abandoned.
+
+**Scope change requested.** Implementation stops. You are directed to `/brainstorm` for the new scope. The existing plan is not modified without a new approved design. Scope changes are never silently absorbed.

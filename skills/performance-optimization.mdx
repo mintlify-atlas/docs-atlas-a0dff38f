@@ -1,0 +1,107 @@
+---
+title: "Performance optimization"
+description: "Measure-first profiling before any optimization is applied — the bottleneck is almost never where you think it is"
+---
+
+The performance-optimization skill enforces one rule above all others: measure before you touch anything. Optimizing without data is guessing. Guessing introduces complexity without verified improvement.
+
+## When this skill fires
+
+The skill description reads: *"Use when code is slow, resource-heavy, or needs optimization — before making any changes, after profiling reveals bottlenecks, or when designing performance-sensitive systems."*
+
+Specific triggers:
+- Code is measurably slow or resource-heavy
+- Profiling has revealed specific bottlenecks
+- Designing a system with known performance requirements
+- Reviewing code for performance before production
+
+## When NOT to use it
+
+- You "feel like" code might be slow but haven't measured
+- Premature optimization during initial implementation
+- Micro-optimizations that won't move the needle
+
+<Note>
+Don't optimize what you haven't profiled. The bottleneck is almost never where you think it is.
+</Note>
+
+## What it does
+
+The skill follows a six-step cycle: establish a baseline, profile to find the bottleneck, form a hypothesis, apply one targeted change, measure again, and document the result. It never skips the measurement steps.
+
+## How it works
+
+<Steps>
+  <Step title="Measure baseline">
+    Before touching anything, establish a benchmark. Record:
+    - Current performance numbers (time, memory, CPU)
+    - Test conditions (data size, concurrency, hardware)
+    
+    Save these as your baseline. You need them to know whether the optimization worked.
+  </Step>
+  <Step title="Profile to find the bottleneck">
+    Use profiling tools appropriate to your stack:
+
+    | Stack | Tools |
+    |---|---|
+    | Python | `cProfile`, `py-spy`, `memory_profiler` |
+    | Node.js | `--prof`, `clinic.js`, Chrome DevTools |
+    | Go | `pprof` |
+    | Generic | timing instrumentation, APM tools |
+
+    The bottleneck is the one place where optimization actually matters. Don't optimize anything else.
+  </Step>
+  <Step title="Form a hypothesis">
+    State explicitly: "I believe X is slow because Y." If you can't explain why something is slow, you don't understand the problem well enough to fix it.
+  </Step>
+  <Step title="Apply a targeted fix">
+    Change ONE thing at a time. Common high-impact areas:
+
+    | Area | Look for |
+    |---|---|
+    | Database | N+1 queries, full table scans, missing indexes |
+    | Caching | Repeated expensive computations with same inputs |
+    | Network | Chatty APIs, large payloads, synchronous chains |
+    | Algorithms | Nested loops over large collections (O(n²) → O(n log n)) |
+    | Memory | Objects created in tight loops, large in-memory datasets |
+    | I/O | Synchronous blocking, missing batching |
+  </Step>
+  <Step title="Measure again">
+    Compare to baseline. Did it improve? If not: revert and try something else. A fix without measurement is not a fix.
+  </Step>
+  <Step title="Document the change">
+    Record what you changed, why, and the before/after numbers. This is essential for understanding the system's performance characteristics over time.
+  </Step>
+</Steps>
+
+## Red flags
+
+| Thought | Reality |
+|---|---|
+| "This looks slow" | Measure it. Looks are deceiving. |
+| "I'll optimize as I go" | Premature optimization obscures intent. Measure first. |
+| "I fixed the bottleneck" | Did you measure? A fix without measurement is not confirmed. |
+| "This is the obvious bottleneck" | Profile anyway. You're probably wrong. |
+
+## Example scenario
+
+Your API endpoint that lists orders is taking 3 seconds per request. The performance-optimization skill fires.
+
+The agent:
+1. **Baseline:** Records 3,100ms average response time with 1,000 orders in the database, measured with `wrk -t2 -c10 -d10s http://localhost:3000/api/orders`
+2. **Profile:** Adds timing instrumentation to the route handler. Finds: DB query takes 50ms, serialization takes 40ms, but a loop calling `getUser(orderId)` for each order takes 2,900ms
+3. **Hypothesis:** "I believe the loop is slow because it makes one database query per order (N+1 problem)"
+4. **Fix:** Replace the per-order user lookup loop with a single JOIN query — one change only
+5. **Measure:** New average: 95ms. 97% improvement.
+6. **Document:** "Eliminated N+1 query in `/api/orders`. Before: 3,100ms (1,000 sequential user lookups). After: 95ms (single JOIN). Baseline: 2026-03-17, `wrk` with 10 concurrent connections."
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    Performance problems are bugs. Root cause investigation applies before any optimization.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Measure after the fix before claiming the optimization is complete.
+  </Card>
+</CardGroup>

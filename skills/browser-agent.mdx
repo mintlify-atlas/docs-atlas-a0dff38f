@@ -1,0 +1,148 @@
+---
+title: "Browser agent"
+description: "Delegates UI testing and browser automation to Antigravity's built-in browser subagent — with prerequisite checks and artifact requirements"
+---
+
+Antigravity includes a built-in browser subagent that can interact with web applications autonomously. The browser-agent skill governs when and how to use it correctly: what prerequisites to check, how to frame requests precisely, and what artifacts prove a task is complete.
+
+## When this skill fires
+
+The skill description reads: *"Use when a task requires interacting with a web browser — testing UI flows, verifying web app behavior, clicking through screens, reading live web content, or automating browser workflows in Google Antigravity."*
+
+Specific triggers:
+- Testing a UI flow end-to-end (login, checkout, form submission)
+- Verifying that a deployed or locally running web app behaves correctly after a code change
+- Clicking through screens to confirm UI state
+- Automating a repetitive browser workflow (fill form, submit, verify result)
+- Reading live content from a specific URL that cannot be fetched as static text
+
+**Do not use it for:**
+- General web research (use `deep-research` instead)
+- Fetching static API responses (use `curl` or fetch in terminal)
+- Anything verifiable with a unit or integration test
+
+## Prerequisites
+
+Before any browser task, verify both conditions and state the result:
+
+> "Chrome extension: [installed / NOT installed] | Allowlist: [domain confirmed / domain NOT listed]"
+
+**1. Chrome extension installed**
+- Look for the Chrome icon in Agent Manager (bottom left) or Editor (top right)
+- Click it → follow the setup prompt → install from Chrome Web Store → grant permissions
+- Without the extension, the browser agent cannot interact with pages
+
+**2. URL allowlist configured** (for non-localhost URLs)
+- Add trusted domains to `~/.gemini/antigravity/browserAllowlist.txt`, one per line:
+  ```
+  localhost
+  127.0.0.1
+  staging.myapp.com
+  ```
+- Add both `localhost` and `127.0.0.1` if the app may be accessed under either hostname
+
+If either check fails, follow the error path before proceeding.
+
+## How to frame browser requests
+
+The browser agent responds to precise, stepwise instructions. Vague requests produce unreliable results.
+
+**Bad:** "Test the login page"
+
+**Good:** "Navigate to `http://localhost:3000/login`. Enter `test@example.com` in the email field and `password123` in the password field. Click the 'Sign In' button. Wait for navigation to complete. Verify the URL is now `http://localhost:3000/dashboard` and the text 'Welcome' appears on screen."
+
+Every browser request must specify:
+1. The starting URL
+2. Each action in sequence (click X, type Y in Z, scroll to W)
+3. The expected end state (URL, visible text, element present or absent)
+
+<Tip>
+Prefer visible labels and text over CSS selectors — labels are more resilient to DOM changes. Use "Click the button labeled 'Submit'" rather than "Click button#submit-btn".
+</Tip>
+
+## Supported actions
+
+| Action | Example instruction |
+|---|---|
+| Navigate | "Go to `http://localhost:3000/settings`" |
+| Click | "Click the button labeled 'Submit'" |
+| Type | "Type 'hello world' into the search input" |
+| Scroll | "Scroll down until the footer is visible" |
+| Wait | "Wait for the spinner to disappear" |
+| Read DOM | "Read the text content of the h1 element" |
+| Screenshot | "Take a screenshot of the current state" |
+| Read console | "Check the browser console for errors" |
+| Execute JS | "Execute `document.title` and return the result" (read-only only — do not mutate auth state) |
+| Record | "Start recording before the first action; stop after the final step" |
+
+## Completion requires an artifact
+
+Do not claim a browser task is complete without a verifiable artifact.
+
+**Acceptable:**
+> "Browser task complete. Screenshot attached shows dashboard loaded at `/dashboard` with 'Welcome, Jane' visible. No console errors."
+
+**Unacceptable:**
+> "I think the login flow worked."
+
+The completion checklist:
+- [ ] Chrome extension was confirmed installed before starting
+- [ ] URL(s) were confirmed in the allowlist before starting
+- [ ] Each action step was executed in sequence
+- [ ] The expected end state was verified (URL, visible text, element)
+- [ ] At least one artifact (screenshot or recording) was produced
+- [ ] Completion statement includes artifact reference and describes actual observed state
+
+## Error paths
+
+<Accordion title="Extension not installed">
+"Browser agent setup required. Open Agent Manager → click the Chrome icon → install the extension → retry."
+
+Do NOT proceed. The browser agent cannot function without the extension.
+</Accordion>
+
+<Accordion title="URL blocked by allowlist">
+"URL [domain] is not in the allowlist. Add it to `~/.gemini/antigravity/browserAllowlist.txt` and retry."
+
+Do NOT attempt to bypass the allowlist.
+</Accordion>
+
+<Accordion title="Page does not reach expected state">
+1. Take a screenshot of the actual state
+2. Compare actual vs. expected
+3. Report the discrepancy with the screenshot as evidence
+4. Stop and surface the failure to the user — do NOT retry automatically without confirmation
+</Accordion>
+
+<Accordion title="Browser agent timeout">
+"Browser agent timed out. Simplify the request into smaller steps and retry once. If it times out again, stop and escalate to the user."
+</Accordion>
+
+## Example scenario
+
+You ask: "Verify the login flow works on the local dev server."
+
+The browser-agent skill fires. The agent:
+1. Announces prerequisites: "Chrome extension: installed | Allowlist: `localhost` NOT listed — adding `localhost` and `127.0.0.1` now"
+2. Adds both entries to `~/.gemini/antigravity/browserAllowlist.txt`
+3. Delegates to browser agent with precise steps:
+   - Navigate to `http://localhost:3000/login`
+   - Type `admin@test.com` into the email field
+   - Type `secret` into the password field
+   - Click the submit button
+   - Wait for URL to change
+   - Take a screenshot
+   - Verify URL is `/dashboard`, text "Welcome" is present, console has no errors
+4. Produces artifact: screenshot of `/dashboard` state
+5. Completion statement: "Login flow verified. Screenshot shows `/dashboard` with 'Welcome, Admin' heading. Zero console errors."
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Deep research" href="/skills/deep-research">
+    For general web research — faster and more reliable than the browser agent for static information.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Browser tasks require an artifact as evidence before any completion claim.
+  </Card>
+</CardGroup>

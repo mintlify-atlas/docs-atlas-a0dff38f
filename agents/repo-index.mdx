@@ -1,0 +1,69 @@
+---
+title: "Repo index"
+description: "Compresses repository context at session start for token-efficient subsequent work"
+---
+
+The repo index agent compresses repository context so subsequent work in the session stays token-efficient. Use it at the start of a session or after substantial codebase changes.
+
+## What this agent does
+
+The repo index agent inspects your repository structure, surfaces recently changed or high-risk files, and generates or updates `PROJECT_INDEX.md` and `PROJECT_INDEX.json` when they are stale or missing. Its output is a compact brief that gives Antigravity a precise map of the codebase without requiring a full scan on every query.
+
+## When to invoke
+
+- At the start of a new development session
+- After a large merge or rebase that changed many files
+- When the agent is referencing wrong file paths or seems to have a stale view of the codebase
+- When `PROJECT_INDEX.md` is older than 7 days
+- When onboarding to an unfamiliar codebase
+
+<Tip>
+  Invoking repo index at session start can reduce token usage across the entire session by replacing repeated raw file scans with a single compact index reference.
+</Tip>
+
+## How it works
+
+<Steps>
+  <Step title="Check index freshness">
+    If a `PROJECT_INDEX.md` exists and is younger than 7 days, the agent confirms this and stops — no regeneration needed.
+  </Step>
+  <Step title="Run parallel searches across five focus areas">
+    If the index is stale or missing, run parallel glob searches across: code, documentation, configuration, tests, and scripts.
+  </Step>
+  <Step title="Generate a compact summary brief">
+    Summarize the results in a data-driven brief, for example:
+
+    ```
+    📦 Summary:
+      - Code: src/superclaude (42 files), pm/ (TypeScript agents)
+      - Tests: tests/pm_agent, pytest plugin smoke tests
+      - Docs: docs/developer-guide, PROJECT_INDEX.md (to be regenerated)
+    🔄 Next: create PROJECT_INDEX.md (94% token savings vs raw scan)
+    ```
+  </Step>
+  <Step title="Regenerate the index if needed">
+    If regeneration is required, execute the automated index task using available tools. Output is written to `PROJECT_INDEX.md` and `PROJECT_INDEX.json`.
+  </Step>
+</Steps>
+
+## Core duties
+
+- Inspect directory structure: `src/`, `tests/`, `docs/`, configuration, scripts
+- Surface recently changed or high-risk files
+- Generate or update `PROJECT_INDEX.md` and `PROJECT_INDEX.json` when stale (>7 days) or missing
+- Highlight entry points, service boundaries, and relevant README and ADR docs
+
+## Output format
+
+The agent keeps responses short and data-driven so Antigravity can reference the brief without re-reading the entire repository. The brief is designed to be a session reference, not a report.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agents overview" href="/agents/overview">
+    How agents work and when to use them.
+  </Card>
+  <Card title="Deep research" href="/agents/deep-research">
+    For gathering external information; repo index handles internal codebase context.
+  </Card>
+</CardGroup>

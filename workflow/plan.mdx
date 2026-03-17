@@ -1,0 +1,118 @@
+---
+title: "/plan"
+description: "Write a detailed implementation plan before touching code"
+---
+
+`/plan` loads the writing-plans skill and produces a comprehensive implementation plan from your approved design. The plan is the contract between design and implementation — every task in it must be specific enough for an engineer with no prior context to execute without asking questions.
+
+<Note>
+`/plan` requires **Planning Mode** to be active. The plan is written in Planning Mode. After the plan is saved you will switch to **Fast Mode** for the implementation phase.
+</Note>
+
+## What the plan contains
+
+Every plan saved to `docs/plans/YYYY-MM-DD-<feature-name>.md` starts with a structured header:
+
+```markdown
+# [Feature Name] Implementation Plan
+
+> **For Antigravity:** REQUIRED SUB-SKILL: Load executing-plans to implement this plan task-by-task.
+
+**Goal:** [One sentence describing what this builds]
+
+**Architecture:** [2-3 sentences about approach]
+
+**Tech Stack:** [Key technologies/libraries]
+
+---
+```
+
+Followed by a sequence of tasks, each one producing exactly one artifact.
+
+## Task granularity
+
+Each step in the plan produces exactly one artifact: a written test, a passing test run output, a code file, or a commit. If a step would produce two artifacts, it is split into two steps.
+
+A typical task looks like this:
+
+````markdown
+### Task N: [Component Name]
+
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
+
+**Step 1: Write the failing test**
+
+```python
+def test_specific_behavior():
+    result = function(input)
+    assert result == expected
+```
+
+**Step 2: Run test to verify it fails**
+
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
+
+**Step 3: Write minimal implementation**
+
+```python
+def function(input):
+    return expected
+```
+
+**Step 4: Run test to verify it passes**
+
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
+
+**Step 5: Commit**
+
+```bash
+git add tests/path/test.py src/path/file.py
+git commit -m "feat: add specific feature"
+```
+````
+
+## Plan validation checklist
+
+Before handing the plan to execution, SuperAntigravity reads it from the perspective of an engineer who has never seen the codebase and verifies:
+
+- [ ] Every file path is exact and follows the documented convention
+- [ ] Every command includes expected output
+- [ ] Every task's purpose is clear from its name and description alone
+- [ ] No task assumes knowledge of a prior conversation or undocumented context
+- [ ] Complete code is included in each task — no "add validation" shorthand
+
+## Execution options
+
+After saving the plan, SuperAntigravity offers two ways to execute it:
+
+<Tabs>
+  <Tab title="Subagent-driven (recommended)">
+    SuperAntigravity dispatches a fresh subagent per task and runs a code review between tasks — all in the current session.
+
+    **Required:** Switch Antigravity to **Fast Mode** before starting.
+
+    This is the recommended approach for fast iteration. The `/implement` workflow orchestrates this process.
+  </Tab>
+  <Tab title="Parallel session">
+    Open a new session in the feature's worktree and load the executing-plans skill. Tasks run in batches with checkpoints.
+
+    This option suits longer plans where you want to review the full plan before any execution begins.
+  </Tab>
+</Tabs>
+
+## Principles applied
+
+The writing-plans skill enforces three engineering principles throughout every plan:
+
+- **DRY** — no duplicated logic across tasks
+- **YAGNI** — no tasks for features not required by the design
+- **TDD** — every task begins with a failing test before any implementation code
+
+<Warning>
+If the design doc from `/brainstorm` does not exist, SuperAntigravity will prompt you to run `/brainstorm` first. Plans written without an approved design are not valid inputs to `/implement`.
+</Warning>

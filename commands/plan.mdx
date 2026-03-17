@@ -1,0 +1,81 @@
+---
+title: "/plan"
+description: "Write a comprehensive implementation plan with bite-sized, TDD-ready tasks."
+---
+
+## What it does
+
+`/plan` converts an approved design document into a detailed, executable implementation plan. Every task is sized to 2–5 minutes and includes exact file paths, complete code, and exact commands with expected output.
+
+The plan is saved to `docs/plans/` and becomes the source of truth for the [`/implement`](/commands/implement) command.
+
+## When to use
+
+Use `/plan` after you have an approved design doc from [`/brainstorm`](/commands/brainstorm). If you don't have an approved design yet, run `/brainstorm` first.
+
+## Prerequisites
+
+<Warning>
+**Planning Mode must be active** in Antigravity settings while writing the plan. The plan requires deep reasoning to produce accurate task breakdowns and file paths.
+</Warning>
+
+- An approved design document at `docs/plans/*-design.md` — if not present, run [`/brainstorm`](/commands/brainstorm) first.
+
+## Conversation mode
+
+**Planning Mode** — required while writing the plan. Switch to **Fast Mode** when executing the plan via [`/implement`](/commands/implement).
+
+## What happens
+
+<Steps>
+  <Step title="Load the writing-plans skill">
+    The `writing-plans` skill is loaded and followed exactly. This provides the structure and quality standards for a complete implementation plan.
+  </Step>
+  <Step title="Write the plan">
+    Antigravity writes a comprehensive plan with bite-sized tasks (2–5 minutes each). Each task includes exact file paths, complete code, and exact commands with expected output.
+  </Step>
+  <Step title="Save the plan">
+    The plan is saved to `docs/plans/YYYY-MM-DD-<feature-name>.md`.
+  </Step>
+  <Step title="Offer execution options">
+    After saving, Antigravity presents two ways to execute:
+    1. **Subagent-Driven (this session)** — fresh subagent per task with review. Recommended: switch to Fast Mode.
+    2. **Parallel Session (separate)** — open a new session with the `executing-plans` skill.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `writing-plans` — plan structure, task sizing, and quality standards
+- `executing-plans` — available for the parallel session execution path
+
+## Example
+
+```bash
+/plan
+```
+
+Antigravity reads your approved design doc, then writes a plan with tasks like:
+
+- Task 1: Create `src/notifications/types.ts` — define `Notification` and `NotificationChannel` interfaces
+- Task 2: Write failing test for `NotificationService.send()` in `src/notifications/service.test.ts`
+- Task 3: Implement `NotificationService.send()` in `src/notifications/service.ts`
+
+Each task includes the exact code to write and the exact command to verify it passes.
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/brainstorm" href="/commands/brainstorm">
+    Step 1 — run this first to produce the design doc that /plan consumes.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    Step 3 — executes the plan you just wrote, task by task.
+  </Card>
+  <Card title="/estimate" href="/commands/estimate">
+    Run before /plan if you need time estimates before committing to implementation.
+  </Card>
+  <Card title="/research" href="/commands/research">
+    Run before /plan to confirm architecture decisions with sourced findings.
+  </Card>
+</CardGroup>

@@ -1,0 +1,98 @@
+---
+title: "Commands overview"
+description: "16 slash commands for explicit workflow control in Antigravity"
+---
+
+SuperAntigravity ships 16 slash commands that give you explicit control over your development workflow. While [skills](/skills/overview) fire automatically when context matches, commands are invoked deliberately — you decide when to run them.
+
+## How to use commands
+
+Type `/` followed by the command name in any Antigravity conversation:
+
+```bash
+/brainstorm
+/plan
+/implement
+```
+
+Each command is backed by a workflow file in `~/.gemini/antigravity/global_workflows/`. You can inspect and customize any workflow file directly.
+
+## All commands
+
+| Command | What it does |
+|---|---|
+| [`/brainstorm`](/commands/brainstorm) | [Step 1] Requirements discovery before writing code |
+| [`/plan`](/commands/plan) | [Step 2] Write a detailed implementation plan |
+| [`/implement`](/commands/implement) | [Step 3] Feature implementation with TDD |
+| [`/review`](/commands/review) | [Step 4] Code review against plan and quality standards |
+| [`/git`](/commands/git) | [Step 5] Git operations with smart commits |
+| [`/research`](/commands/research) | Deep multi-source research with confidence levels |
+| [`/build`](/commands/build) | Build and package the project |
+| [`/test`](/commands/test) | Run tests with coverage analysis |
+| [`/analyze`](/commands/analyze) | Code quality, security, performance, and architecture review |
+| [`/design`](/commands/design) | System architecture, API, and component design |
+| [`/troubleshoot`](/commands/troubleshoot) | Systematic debugging with phase-by-phase isolation |
+| [`/explain`](/commands/explain) | Explain code, concepts, or system behavior |
+| [`/improve`](/commands/improve) | Apply systematic code improvements |
+| [`/cleanup`](/commands/cleanup) | Remove dead code and unused imports |
+| [`/document`](/commands/document) | Generate documentation for components and APIs |
+| [`/estimate`](/commands/estimate) | Development estimates with confidence levels |
+
+### Bonus commands
+
+These commands are available but not part of the core workflow:
+
+| Command | What it does |
+|---|---|
+| `/business-panel` | AI-facilitated panel discussion with business thought leaders |
+| `/spec-panel` | Multi-expert review of technical specification quality |
+| `/recommend` | Intelligent recommender for SuperAntigravity commands |
+
+## Conversation mode guidance
+
+Antigravity's conversation modes affect how commands perform. Match the mode to the command for best results.
+
+<Warning>
+**Planning Mode** is mandatory for `/brainstorm`, `/plan`, `/research`, and `/troubleshoot`. These commands require deep thinking, design reasoning, and complex problem isolation — they will not perform correctly in Fast Mode.
+</Warning>
+
+<Tip>
+**Fast Mode** is recommended for `/implement`, `/test`, and batch execution. These commands are optimized for direct code generation and mechanical tasks.
+</Tip>
+
+| Mode | Commands |
+|---|---|
+| Planning Mode (required) | `/brainstorm`, `/plan`, `/research`, `/troubleshoot` |
+| Fast Mode (recommended) | `/implement`, `/test`, `/build` |
+| Either mode | `/git`, `/analyze`, `/design`, `/explain`, `/improve`, `/review`, `/cleanup`, `/document`, `/estimate` |
+
+## The core workflow
+
+The five numbered commands form a complete development pipeline:
+
+```
+/brainstorm  →  discuss + design (no code yet)
+     ↓
+/plan        →  bite-sized tasks with TDD steps
+     ↓
+/implement   →  subagent per task + code review between
+     ↓
+/review      →  validate against plan
+     ↓
+/git         →  smart commit and push
+```
+
+<CardGroup cols={2}>
+  <Card title="/brainstorm" href="/commands/brainstorm">
+    Start here. Turn vague ideas into approved designs before writing a line of code.
+  </Card>
+  <Card title="/plan" href="/commands/plan">
+    Convert an approved design into a bite-sized, TDD-ready implementation plan.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    Execute the plan task by task with confidence checks and review gates.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    Systematic four-phase debugging when something breaks.
+  </Card>
+</CardGroup>

@@ -1,0 +1,71 @@
+---
+title: "Frontend architect"
+description: "Designs maintainable, performant UIs: component systems, state management, and accessibility"
+---
+
+The frontend architect is a senior frontend architect persona. Its specialty is building maintainable, performant user interfaces. It thinks in terms of component design, state flow, user experience, and bundle performance.
+
+## What this agent does
+
+The frontend architect starts every engagement with user flow, not component hierarchy. It designs component APIs before implementation begins, minimizes global state, measures rendering performance before optimizing, and tests behavior rather than implementation details.
+
+### Mindset
+
+- The user's experience is the product
+- Components should be composable and testable in isolation
+- State is the root of most frontend complexity — manage it deliberately
+- Performance is a feature — measure it
+
+## When to invoke
+
+- Designing a new component system or UI feature
+- Reviewing state management architecture decisions
+- Diagnosing rendering performance issues
+- Auditing accessibility (semantic HTML, ARIA, keyboard navigation)
+- Planning a component testing strategy
+- When the `/design` command surfaces frontend architecture questions
+
+## How it works
+
+<Steps>
+  <Step title="Start with user flow, not component hierarchy">
+    The agent works from what the user needs to do, then derives the component structure that serves that flow.
+  </Step>
+  <Step title="Design component APIs before implementation">
+    Props APIs and component boundaries are designed explicitly before any implementation, keeping components composable and their interfaces stable.
+  </Step>
+  <Step title="Minimize global state">
+    Most state is local. The agent challenges the need for global state and recommends elevating state only when genuinely needed.
+  </Step>
+  <Step title="Measure rendering performance before optimizing">
+    The agent does not recommend performance optimizations without measurement. It identifies what to measure and how to interpret the results.
+  </Step>
+  <Step title="Test behavior, not implementation details">
+    Test strategy focuses on what the component does from the user's perspective, not how it is internally implemented.
+  </Step>
+</Steps>
+
+## Focus areas
+
+| Area | What it covers |
+|------|----------------|
+| **Component design** | Composition, props API, separation of concerns |
+| **State management** | Local vs. global state, derived state, side effects |
+| **Performance** | Bundle size, rendering performance, Core Web Vitals |
+| **Accessibility** | Semantic HTML, ARIA, keyboard navigation |
+| **Testing** | Component tests, interaction tests, visual regression |
+
+## Boundaries
+
+The frontend architect will design component systems, state architecture, UI patterns, and performance analysis. It will not make backend architecture decisions or write business logic in components.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="System architect" href="/agents/system-architect">
+    For system-level design questions that span frontend and backend.
+  </Card>
+  <Card title="Backend architect" href="/agents/backend-architect">
+    For the API contracts your frontend components will consume.
+  </Card>
+</CardGroup>

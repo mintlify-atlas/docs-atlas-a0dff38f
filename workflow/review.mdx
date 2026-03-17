@@ -1,0 +1,99 @@
+---
+title: "/review"
+description: "Validate implementation against the plan with specialist agents"
+---
+
+`/review` loads the code-reviewer agent to run a structured review of the implementation against the plan, requirements, and quality standards. It is the gate between `/implement` and `/git` — nothing ships without a review verdict.
+
+## What gets reviewed
+
+The review covers four areas. Each one is checked independently and reported separately.
+
+### Plan compliance
+
+- Does the implementation match what was planned?
+- Are all acceptance criteria met?
+- Is there any scope creep — things added that weren't planned?
+
+### Code quality
+
+- Is the code readable without needing comments to explain it?
+- Are functions doing one thing?
+- Is error handling present at system boundaries?
+- Are there tests for the new behavior?
+
+### Security
+
+- Is there any user input that isn't validated?
+- Are there any secrets or credentials in the code?
+- Are there any new endpoints missing authorization?
+
+### Performance
+
+- Any N+1 queries — a loop containing a database call?
+- Any synchronous blocking I/O in an async context?
+- Any unbounded data fetching — missing `LIMIT` on queries?
+- Any unnecessary re-computation inside loops?
+
+## Issue severity
+
+| Severity | Meaning |
+|----------|---------|
+| **Critical** | Blocks shipping — security vulnerabilities, broken functionality |
+| **High** | Should fix before shipping — significant quality issues |
+| **Medium** | Fix soon — technical debt, missing tests |
+| **Low** | Nice to have — style, minor improvements |
+
+Only Critical and High issues block the gate. Medium and Low issues are surfaced as suggestions and can be addressed after shipping.
+
+## Review output format
+
+The code-reviewer agent produces a structured report:
+
+```
+=== CODE REVIEW ===
+Task reviewed: [task N from plan]
+Reviewer: code-reviewer agent
+
+PLAN COMPLIANCE: PASS
+- All acceptance criteria met
+- No scope creep detected
+
+CODE QUALITY: 2 issues
+- MEDIUM: auth.js:45 — function is 87 lines, extract token validation to separate function
+- LOW: Missing error message context in catch block at user.js:102
+
+SECURITY: PASS (no auth/input handling changes)
+
+PERFORMANCE: PASS
+
+OVERALL: APPROVED WITH SUGGESTIONS
+Blocker count: 0 | Suggestions: 2
+```
+
+## Verdicts and what they mean
+
+<Tabs>
+  <Tab title="APPROVED">
+    No issues found. The implementation is ready to ship. The gate to `/git` is open.
+  </Tab>
+  <Tab title="APPROVED WITH SUGGESTIONS">
+    No blockers, but suggestions were noted. The gate to `/git` is open. Suggestions can be addressed before or after shipping.
+  </Tab>
+  <Tab title="CHANGES REQUIRED">
+    One or more Critical or High issues were found. The gate to `/git` is closed. Issues must be resolved and a follow-up review run before proceeding.
+  </Tab>
+</Tabs>
+
+## Agents involved
+
+| Agent | When invoked |
+|-------|--------------|
+| code-reviewer | Primary — runs the full review checklist |
+| security-engineer | Invoked when the changes include auth, input handling, credentials, or new endpoints |
+
+The receiving-code-review skill is also loaded when applying feedback from a CHANGES REQUIRED verdict, to ensure feedback is incorporated correctly.
+
+<Note>
+If the review returns CHANGES REQUIRED, SuperAntigravity loads the receiving-code-review skill to guide you through applying the feedback systematically. After fixes are applied, `/review` is run again before the gate opens.
+</Note>

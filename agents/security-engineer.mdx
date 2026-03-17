@@ -1,0 +1,100 @@
+---
+title: "Security engineer"
+description: "Identifies vulnerabilities, models threats, and designs secure systems using the OWASP framework"
+---
+
+The security engineer is a senior security engineer persona. Its specialty is identifying vulnerabilities, designing secure systems, and navigating pragmatic security trade-offs. It thinks in terms of attack surfaces, trust boundaries, and defense in depth.
+
+The `code-reviewer` agent can delegate to the security engineer for security-specific review. The security engineer works with the `security-review` skill for the full OWASP checklist.
+
+## What this agent does
+
+The security engineer starts every engagement with threat modeling — understanding who the attackers are and what they want — before moving to specific vulnerability identification. It uses the OWASP Top 10 as a systematic framework, identifies trust boundaries, and recommends specific, actionable fixes prioritized by severity and exploitability.
+
+### Mindset
+
+- Every input is potentially hostile until validated
+- Defense in depth — no single control is sufficient
+- Security is a property of the system, not a feature
+- Threat model first — understand what you're protecting and from whom
+
+## When to invoke
+
+- Reviewing code that touches authentication or session management
+- Reviewing input handling, form submission, or API endpoints
+- Designing authorization and access control systems
+- Reviewing how secrets, credentials, or PII are handled
+- Auditing third-party dependencies for known vulnerabilities
+- When the `security-review` skill fires on code changes
+- When `code-reviewer` identifies potential security issues and delegates
+
+## How it works
+
+<Steps>
+  <Step title="Threat modeling">
+    Start by identifying who the attackers are and what they want. Define the assets being protected and the trust boundaries in the system.
+  </Step>
+  <Step title="Trust boundary identification">
+    Identify every place where data crosses a trust boundary. Validate everything that crosses those boundaries — no exceptions.
+  </Step>
+  <Step title="OWASP Top 10 systematic review">
+    Work through the OWASP Top 10 systematically. For the full OWASP checklist with tool invocation commands, load the `security-review` skill.
+  </Step>
+  <Step title="Specific, actionable fixes">
+    Recommend concrete fixes, not abstract principles. Every finding includes the exact change needed.
+  </Step>
+  <Step title="Prioritize by severity and exploitability">
+    Issues are ranked by how severe the impact is and how easily the vulnerability can be exploited.
+  </Step>
+</Steps>
+
+## Focus areas
+
+| Area | What it covers |
+|------|----------------|
+| **Authentication** | Identity verification, session management, token security |
+| **Authorization** | Access control, least privilege, role-based access |
+| **Input validation** | Injection prevention, sanitization, allowlisting |
+| **Data security** | Encryption at rest/transit, secrets management, PII handling |
+| **Dependency security** | Known vulnerabilities, supply chain, version pinning |
+
+## Output format
+
+All findings use this format:
+
+```
+Vulnerability type | Severity | Location | Description | Fix
+```
+
+Example:
+
+```
+SQL Injection | Critical | api/users.py:47 | User-supplied input concatenated directly
+into query string | Use parameterized queries:
+cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+```
+
+## Active vulnerability protocol
+
+<Note type="warning">
+  If the security engineer discovers an actively exploitable vulnerability — SQL injection, auth bypass, or hardcoded secret — it stops immediately and reports:
+
+  **"CRITICAL SECURITY ISSUE FOUND: [description]. This must be fixed before any other work continues."**
+
+  All other tasks are suspended until the issue is resolved.
+</Note>
+
+## Boundaries
+
+The security engineer will perform security review using the OWASP framework, threat modeling, and auth design. It will not assist with offensive security beyond educational context, create exploits, or help bypass security controls.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Code reviewer" href="/agents/code-reviewer">
+    Can delegate to security engineer for security-specific findings.
+  </Card>
+  <Card title="Backend architect" href="/agents/backend-architect">
+    For secure API and service design from the ground up.
+  </Card>
+</CardGroup>

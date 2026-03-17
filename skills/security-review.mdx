@@ -1,0 +1,142 @@
+---
+title: "Security review"
+description: "OWASP Top 10 checklist for every security-sensitive code change — systematic review of auth, input handling, secrets, and data access"
+---
+
+Security is not a feature — it's a property of the entire system. The security-review skill works through security boundaries systematically using the OWASP Top 10 as a checklist, not ad-hoc intuition.
+
+## When this skill fires
+
+The skill description reads: *"Use when reviewing code for vulnerabilities, implementing authentication or authorization, handling user input, storing sensitive data, or before any feature that touches security boundaries goes to production."*
+
+Specific triggers:
+- Authentication, authorization, or session management code
+- Any user input that touches storage, commands, or rendering
+- Secrets, credentials, or API keys in code or config
+- Before a security-sensitive feature ships
+- After any change to auth flows or data access controls
+
+## What it does
+
+The skill walks through the OWASP Top 10 categories with specific search commands for each. For every finding, it documents the vulnerability type, severity, location, description, and the specific fix to apply. If nothing is found, it produces a structured pass statement.
+
+## How it works
+
+### OWASP Top 10 checklist
+
+Work through these categories for every security-relevant code change:
+
+<Accordion title="A01 — Broken access control">
+- Every endpoint checks authorization (not just authentication)
+- Users can only access their own data
+- Admin functions require an explicit admin role check
+
+Search: `grep -r 'router\.|app\.(get|post|put|delete|patch)' --include='*.ts' | grep -v 'auth|authorize|permission|role'`
+</Accordion>
+
+<Accordion title="A02 — Cryptographic failures">
+- No secrets in source code or env files committed to git
+- Passwords hashed with bcrypt or argon2 (not MD5 or SHA1)
+- Data in transit uses TLS
+- Sensitive data not logged
+
+Search: `grep -rn 'password\s*=\s*["\x27][^"\x27]|api_key\s*=\s*["\x27][^"\x27]' --include='*.ts'`
+</Accordion>
+
+<Accordion title="A03 — Injection">
+- All database queries use parameterized queries or ORM (never string concatenation)
+- All shell commands use safe exec (never `eval` with user input)
+- All HTML output is escaped or uses a safe template engine
+
+Search: `grep -rn '"SELECT|"INSERT|"UPDATE|"DELETE' --include='*.ts' | grep '+'`
+</Accordion>
+
+<Accordion title="A04 — Insecure design">
+- Authentication flows validated against known-good patterns
+- Rate limiting on authentication endpoints
+- Account enumeration prevented (same response for unknown user vs. wrong password)
+</Accordion>
+
+<Accordion title="A05 — Security misconfiguration">
+- Debug mode disabled in production
+- Default credentials changed
+- Unnecessary features and endpoints disabled
+- Error messages don't expose stack traces to users
+</Accordion>
+
+<Accordion title="A06 — Vulnerable and outdated components">
+- Dependencies checked against known CVE databases: `npm audit`, `pip-audit`, `snyk test`
+- No dependencies with known critical or high CVEs in production: `npm audit --audit-level=high`
+- Lock files committed (package-lock.json, poetry.lock, etc.)
+- Direct dependencies pinned to specific versions
+</Accordion>
+
+<Accordion title="A07 — Authentication failures">
+- Session tokens invalidated on logout
+- Password reset tokens expire and are single-use
+- Brute force protection on login endpoints
+</Accordion>
+
+<Accordion title="A08 — Software and data integrity">
+- Dependencies pinned to verified versions
+- No `eval()` or dynamic code execution with user input
+
+Search: `grep -rn 'eval(' --include='*.ts'` and `grep -rn 'new Function(' --include='*.ts'`
+</Accordion>
+
+<Accordion title="A09 — Logging and monitoring">
+- Authentication events logged (both success and failure)
+- Sensitive operations audited
+- Logs don't contain secrets or PII
+</Accordion>
+
+### Red flags in code
+
+These patterns require immediate review:
+
+| Pattern | Why it's dangerous |
+|---|---|
+| `eval()`, `exec()`, `system()` with user input | Remote code execution |
+| String concatenation in SQL: `"SELECT * FROM users WHERE id = " + userId` | SQL injection |
+| `innerHTML = userContent` | Cross-site scripting (XSS) |
+| `require(userInput)` or dynamic imports with user data | Arbitrary module execution |
+| Secrets in `.env` files committed to git | Credential exposure |
+| MD5 or SHA1 for password hashing | Weak cryptography |
+
+## Output format
+
+For each finding:
+1. **Vulnerability type** (OWASP category)
+2. **Severity** (Critical / High / Medium / Low)
+3. **Location** (file:line)
+4. **Description** (what's wrong and why)
+5. **Fix** (specific code change or pattern to use)
+
+If no vulnerabilities found:
+> "Security Review: PASS. No issues found in [scope]. Reviewed: [list of OWASP categories checked]. Verified: [date and reviewer]."
+
+## Example scenario
+
+You've just implemented a password reset endpoint. The security-review skill fires.
+
+The agent runs through the OWASP checklist:
+- A01: confirms the reset endpoint doesn't leak data about which emails exist in the system
+- A02: finds the reset token is stored in plaintext — marks as High severity, file:line, fix: store SHA-256 hash instead
+- A04: finds no rate limiting on the reset endpoint — marks as Medium severity, fix: add rate limiting middleware
+- A07: confirms token expiry is implemented; confirms token is deleted after use
+
+Outputs findings with locations and specific fixes. No guessing, no "looks like it should be fine."
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Dependency management" href="/skills/dependency-management">
+    Handles OWASP A06 (vulnerable and outdated components) in depth.
+  </Card>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    If a security issue requires a fix, systematic debugging governs how to implement it.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Confirms security fixes are in place before marking the review complete.
+  </Card>
+</CardGroup>

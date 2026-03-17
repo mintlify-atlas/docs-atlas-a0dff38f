@@ -1,0 +1,93 @@
+---
+title: "/build"
+description: "Build, compile, and package your project with diagnostic analysis on failure."
+---
+
+## What it does
+
+`/build` analyzes your project's build configuration, validates the environment, executes the appropriate build command for your target, and reports the resulting artifacts and build metrics. On failure, it diagnoses the root cause before retrying.
+
+## When to use
+
+Use `/build` when you want to compile or package your project — for development, production, or test targets. Run it after [`/implement`](/commands/implement) to verify the full build passes, or standalone when troubleshooting build issues.
+
+## Prerequisites
+
+- Dependencies installed and up to date
+- Build configuration present (e.g., `package.json`, `Cargo.toml`, `pyproject.toml`)
+
+## Conversation mode
+
+**Fast Mode** — recommended for direct build execution.
+
+## What happens
+
+<Steps>
+  <Step title="Analyze project structure and build configuration">
+    Antigravity reads the project structure and identifies the build system and configuration files.
+  </Step>
+  <Step title="Validate environment and dependencies">
+    Environment variables, installed dependencies, and tool versions are checked before executing the build.
+  </Step>
+  <Step title="Execute the build">
+    The appropriate build command is run with the correct flags for your target (dev, prod, or test).
+  </Step>
+  <Step title="Parse errors with diagnostic analysis">
+    If the build fails, errors are parsed and analyzed. The `systematic-debugging` skill is loaded — the same failing command is never retried without a diagnosis.
+  </Step>
+  <Step title="Report artifacts and metrics">
+    On success, the build artifacts generated and key build metrics (size, duration) are reported.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `systematic-debugging` — loaded on build failure to diagnose root cause before any retry
+
+## Common build systems
+
+| Stack | Command |
+|---|---|
+| Node.js / npm | `npm run build` |
+| Node.js / Bun | `bun run build` |
+| Python | `python -m build` or `poetry build` |
+| Go | `go build ./...` |
+| Rust | `cargo build --release` |
+| Docker | `docker build -t name .` |
+
+## Example
+
+```bash
+/build
+```
+
+Antigravity detects a Node.js project, validates that `node_modules` is present, runs `npm run build`, and reports:
+
+```
+Build target: production
+Command: npm run build
+Result: SUCCESS
+Artifacts: dist/ (1.2 MB, 3 files)
+Duration: 4.3s
+```
+
+<Warning>
+If the build fails, Antigravity will load the `systematic-debugging` skill and diagnose the root cause. It will not retry the same failing command without a new hypothesis.
+</Warning>
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/test" href="/commands/test">
+    Run tests with coverage after a successful build.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    For persistent build failures that need deep systematic investigation.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    The implementation step that precedes a production build.
+  </Card>
+  <Card title="/git" href="/commands/git">
+    Commit and push after a clean build and passing tests.
+  </Card>
+</CardGroup>

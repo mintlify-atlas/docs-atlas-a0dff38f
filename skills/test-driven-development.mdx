@@ -1,0 +1,209 @@
+---
+title: "Test-driven development"
+sidebarTitle: "TDD"
+description: "Enforces the red-green-refactor cycle for every feature and bug fix — no production code without a failing test first"
+---
+
+The TDD skill is rigid — follow it exactly. Its iron law: no production code without a failing test first. Deviating from the letter of the process defeats the purpose entirely.
+
+## When this skill fires
+
+The skill description reads: *"Use when implementing any feature or bugfix, before writing implementation code."*
+
+This means it fires for:
+- New features
+- Bug fixes
+- Refactoring
+- Behavior changes
+
+**Exceptions** (require explicit agreement with your human partner): throwaway prototypes, generated code, configuration files.
+
+<Warning>
+Thinking "skip TDD just this once"? That is a rationalization. The skill applies.
+</Warning>
+
+## What it does
+
+TDD enforces a strict three-phase cycle — **RED**, **GREEN**, **REFACTOR** — for every piece of new functionality. The defining characteristic is that you must *watch the test fail* before writing any implementation. A test that passes immediately proves nothing.
+
+## How it works
+
+### The iron law
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+If you wrote code before the test, delete it. Start over. Not "use it as reference" — delete it.
+
+### Red-green-refactor cycle
+
+<Steps>
+  <Step title="RED — Write the failing test">
+    Write one minimal test showing what should happen. Requirements:
+    - Tests one behavior
+    - Has a clear name describing that behavior
+    - Uses real code (no mocks unless unavoidable)
+
+    Good example:
+    ```typescript
+    test('retries failed operations 3 times', async () => {
+      let attempts = 0;
+      const operation = () => {
+        attempts++;
+        if (attempts < 3) throw new Error('fail');
+        return 'success';
+      };
+      const result = await retryOperation(operation);
+      expect(result).toBe('success');
+      expect(attempts).toBe(3);
+    });
+    ```
+  </Step>
+  <Step title="Verify RED — Watch it fail (mandatory, never skip)">
+    Run the test:
+    ```bash
+    npm test path/to/test.test.ts
+    ```
+    Confirm:
+    - The test fails (not errors)
+    - The failure message is what you expected
+    - It fails because the feature is missing — not because of a typo
+
+    If the test passes immediately, you are testing existing behavior. Fix the test. If the test errors, fix the error and re-run until it fails correctly.
+  </Step>
+  <Step title="GREEN — Write minimal implementation">
+    Write the simplest code that makes the test pass. Do not add features, refactor other code, or "improve" beyond what the test requires.
+
+    Good example:
+    ```typescript
+    async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
+      for (let i = 0; i < 3; i++) {
+        try {
+          return await fn();
+        } catch (e) {
+          if (i === 2) throw e;
+        }
+      }
+      throw new Error('unreachable');
+    }
+    ```
+  </Step>
+  <Step title="Verify GREEN — Confirm all tests pass (mandatory)">
+    Run the full test suite:
+    ```bash
+    npm test path/to/test.test.ts
+    ```
+    Confirm:
+    - The new test passes
+    - All other tests still pass
+    - Output is clean (no errors, no warnings)
+
+    If the test fails: fix the code, not the test. If other tests fail: fix them now.
+  </Step>
+  <Step title="REFACTOR — Clean up">
+    After green only:
+    - Remove duplication
+    - Improve names
+    - Extract helpers
+
+    Keep all tests green. Do not add new behavior during refactoring.
+  </Step>
+</Steps>
+
+Repeat the cycle for each new behavior.
+
+### Testing anti-patterns
+
+Avoid these common mistakes:
+- **Testing mock behavior instead of real behavior** — mocks should stand in for dependencies, not be the subject of the test
+- **Adding test-only methods to production classes** — if you need a hook for testing, the design is coupled; use dependency injection instead
+- **Mocking without reading the real implementation** — a wrong mock produces a wrong test
+
+### Common rationalizations
+
+| Excuse | Reality |
+|---|---|
+| "Too simple to test" | Simple code breaks. The test takes 30 seconds. |
+| "I'll write tests after" | Tests passing immediately prove nothing. |
+| "Tests after achieve the same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
+| "Already manually tested" | Ad-hoc is not systematic. No record, can't re-run. |
+| "Deleting X hours is wasteful" | Sunk cost fallacy. Unverified code is technical debt. |
+| "TDD will slow me down" | TDD is faster than debugging. Pragmatic = test-first. |
+
+### Red flags — stop and start over
+
+Any of these mean: delete the code and start over with TDD.
+
+- Code written before the test
+- Test passes immediately
+- Can't explain why the test failed
+- Tests added "later"
+- "Keep as reference" or "adapt existing code"
+- "Already spent X hours, deleting is wasteful"
+- "TDD is dogmatic, I'm being pragmatic"
+
+## Example scenario: bug fix
+
+**Bug:** Empty email is accepted by the form.
+
+**RED** — write the failing test:
+```typescript
+test('rejects empty email', async () => {
+  const result = await submitForm({ email: '' });
+  expect(result.error).toBe('Email required');
+});
+```
+
+**Verify RED** — run and confirm failure:
+```bash
+$ npm test
+FAIL: expected 'Email required', got undefined
+```
+
+**GREEN** — minimal implementation:
+```typescript
+function submitForm(data: FormData) {
+  if (!data.email?.trim()) {
+    return { error: 'Email required' };
+  }
+  // ...
+}
+```
+
+**Verify GREEN** — confirm passing:
+```bash
+$ npm test
+PASS
+```
+
+**REFACTOR** — extract validation to a shared helper if multiple fields need it.
+
+## Verification checklist
+
+Before marking work complete:
+
+- [ ] Every new function/method has a test
+- [ ] Watched each test fail before implementing
+- [ ] Each test failed for the expected reason (feature missing, not a typo)
+- [ ] Wrote minimal code to pass each test
+- [ ] All tests pass
+- [ ] Output is clean (no errors, no warnings)
+- [ ] Tests use real code (mocks only if unavoidable)
+- [ ] Edge cases and errors are covered
+
+Can't check all boxes? You skipped TDD. Start over.
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    When a bug is found, write a failing test reproducing it first, then follow TDD to fix it.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Run before claiming the feature is complete — verifies the test suite is passing.
+  </Card>
+  <Card title="Writing plans" href="/skills/writing-plans">
+    Plans include the exact TDD steps for each implementation task.
+  </Card>
+</CardGroup>

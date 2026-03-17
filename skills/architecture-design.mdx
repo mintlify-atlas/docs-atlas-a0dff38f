@@ -1,0 +1,141 @@
+---
+title: "Architecture design"
+description: "Constraint-first option evaluation with documented decision records — understand the system before you design it"
+---
+
+Architecture decisions are expensive to change. The architecture-design skill establishes constraints before proposing options, presents multiple options with explicit trade-offs, makes a clear recommendation, and records what was decided and why.
+
+## When this skill fires
+
+The skill description reads: *"Use when designing new systems or significant features, evaluating architectural trade-offs, choosing between structural approaches, or when a task requires understanding system-wide design before writing code."*
+
+Specific triggers:
+- Starting a new system or significant new component
+- Evaluating whether to build vs. use existing solutions
+- Making decisions that affect multiple parts of the system
+- Choosing between fundamentally different structural approaches
+- Designing APIs, data models, or service boundaries
+
+## What it does
+
+Architecture design follows a five-step process: gather constraints, name trade-offs explicitly, propose 2–3 options with pros/cons, recommend one with clear reasoning, and document the decision record. It refuses to propose options before constraints are understood.
+
+## How it works
+
+### Constraints checklist
+
+Before presenting any architectural options, gather at least 4 of these 5 constraints:
+
+- [ ] **Scale** — users / requests / data volume per day
+- [ ] **Consistency** — eventual vs. strong (which operations require which)
+- [ ] **Latency** — acceptable p50 and p99 in milliseconds
+- [ ] **Team** — size, existing stack, deployment platform
+- [ ] **Cost** — hard budget ceiling if any
+
+**Termination criterion:** proceed when 4 out of 5 items are checked, or when the user has explicitly said "don't know" or "doesn't matter" for unchecked items.
+
+<Warning>
+Options that ignore constraints are not options — they are guesses. If fewer than 4 constraints are known and the user has not dismissed the unknowns, ask before proceeding.
+</Warning>
+
+### The process
+
+<Steps>
+  <Step title="Understand constraints">
+    Gather the constraints checklist above. Record what is known and what is assumed.
+  </Step>
+  <Step title="Name the core trade-offs">
+    Every architecture has trade-offs. Name them explicitly before proposing anything:
+    - Consistency vs. availability
+    - Simple vs. scalable
+    - Build vs. buy
+    - Monolith vs. services
+    - Synchronous vs. asynchronous
+  </Step>
+  <Step title="Propose 2–3 options">
+    Never present only one option. For each option:
+    - Describe the approach in 2–3 sentences
+    - List pros and cons
+    - State which constraints it satisfies and which it doesn't
+    - Give a complexity estimate
+  </Step>
+  <Step title="Recommend with reasoning">
+    Make a clear recommendation — state which option, and explain why given the specific constraints. Don't hedge everything. Make a call.
+  </Step>
+  <Step title="Document the decision">
+    Record: what was decided, what was rejected, and why. This is the most important thing to write down.
+  </Step>
+</Steps>
+
+### Handling uncertainty
+
+When constraints are unavailable, proceed transparently:
+
+1. State assumptions explicitly: "I am assuming [X] because [reason]."
+2. Design for the stated assumption
+3. Document that the design must be revisited: "If actual [constraint] differs from this assumption, revisit [specific aspect]."
+
+Assumptions are acceptable. Hidden assumptions are not.
+
+### Open questions
+
+After producing the output, list any open questions. Assign each to exactly one owner:
+
+- **(user)** — only the user can answer (business requirements, budget decisions). Do not proceed if any user-assigned question is unanswered.
+- **(deep-research skill)** — answerable by researching documentation, benchmarks, or compatibility
+- **(implementation discovery)** — answerable only by building a spike or prototype; acceptable to proceed and revisit
+
+### Architecture principles
+
+- **YAGNI** — don't build for hypothetical future needs
+- **Simple first** — the simplest thing that could work is usually right
+- **Explicit over implicit** — clear dependencies beat magic
+- **Stateless where possible** — stateful systems are harder to scale and reason about
+- **Fail fast** — validate inputs at boundaries, not deep in the call stack
+
+## Common patterns reference
+
+| Pattern | Use when |
+|---|---|
+| REST API | CRUD over resources, external-facing APIs |
+| Event-driven | Decoupling producers/consumers, async workflows |
+| CQRS | Read/write loads differ significantly |
+| Repository pattern | Abstracting data access from business logic |
+| Circuit breaker | Calling unreliable external services |
+| Saga pattern | Distributed transactions across services |
+| BFF | Multiple clients with different data needs |
+
+## Output format
+
+Every architecture design session produces:
+1. **Constraints** — what must be true
+2. **Options** — 2–3 approaches with trade-offs
+3. **Recommendation** — clear choice with reasoning
+4. **Decision record** — what was decided and what was rejected
+5. **Open questions** — each assigned to (user / deep-research skill / implementation discovery)
+
+## Example scenario
+
+You ask: "What's the best way to structure our notification service?"
+
+The architecture-design skill fires. The agent:
+1. Asks for constraints: 5,000 users, 50k notifications/day, 2-engineer team, no existing message queue
+2. Names the primary trade-off: sync vs. async delivery; reliability vs. simplicity
+3. Proposes Option A (DB polling), Option B (message queue), Option C (SSE/webhooks)
+4. Recommends Option A: at 50k/day on a 2-engineer team, DB polling satisfies all constraints without new infrastructure
+5. Documents: Option B rejected (premature complexity), Option C rejected (no guaranteed delivery for offline users)
+6. Lists open questions: email retry policy (assigned to user), email provider (assigned to user), index optimization (assigned to implementation discovery)
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Deep research" href="/skills/deep-research">
+    Feeds findings into the trade-off analysis for each architectural option.
+  </Card>
+  <Card title="Brainstorming" href="/skills/brainstorming">
+    Architecture design fires during the brainstorming phase when structural decisions arise.
+  </Card>
+  <Card title="Confidence check" href="/skills/confidence-check">
+    After architecture design completes, confidence check verifies the approach score before implementation begins.
+  </Card>
+</CardGroup>

@@ -1,0 +1,106 @@
+---
+title: "/implement"
+description: "Orchestrates feature implementation through TDD with review gates."
+---
+
+## What it does
+
+`/implement` executes your implementation plan task by task, using test-driven development with confidence checks and code review gates between each task. It orchestrates several skills to enforce quality at every step.
+
+## When to use
+
+Use `/implement` after you have both an approved design and a written implementation plan. This is Step 3 in the core workflow.
+
+## Prerequisites
+
+<Warning>
+**Fast Mode** must be active in Antigravity settings. `/implement` is optimized for direct code generation — Planning Mode will slow it down unnecessarily.
+</Warning>
+
+- Approved design doc at `docs/plans/*-design.md` — if not present, run [`/brainstorm`](/commands/brainstorm) first
+- Implementation plan at `docs/plans/*-plan.md` — if not present, run [`/plan`](/commands/plan) first
+- You must be on a feature branch, not `main` or `master`
+
+## Conversation mode
+
+**Fast Mode** — required.
+
+## What happens
+
+<Steps>
+  <Step title="Load the plan">
+    Antigravity reads the plan file at `docs/plans/*-plan.md`. A confidence check that doesn't reference the plan's specific tasks and file paths is invalid and will not proceed.
+  </Step>
+  <Step title="Confidence check">
+    The `confidence-check` skill runs. A score of 27/30 or higher is required to proceed. If below 27, Antigravity announces the specific gap (dimension, score, unknown) and attempts to fill it by reading files or running research. If the gap cannot be filled within 2 iterations, it asks you directly and waits.
+  </Step>
+  <Step title="RED phase — write failing test">
+    The `test-driven-development` skill runs the RED phase: a failing test is written for the current task's behavior before any implementation.
+  </Step>
+  <Step title="Minimal implementation">
+    The minimum code required to make the failing test pass is written — nothing more.
+  </Step>
+  <Step title="GREEN phase — make it pass">
+    The `test-driven-development` skill runs the GREEN phase: the test passes. A commit is made immediately with message format `test: [what behavior is now tested]`.
+  </Step>
+  <Step title="Code review">
+    The `requesting-code-review` skill runs a review of the task against the plan. Issues are addressed before moving to the next task.
+  </Step>
+  <Step title="Repeat for each task">
+    Steps 2–6 repeat for every task in the plan.
+  </Step>
+  <Step title="Verification before completion">
+    The `verification-before-completion` skill runs a final check across all tasks.
+  </Step>
+  <Step title="Finish the branch">
+    The `finishing-a-development-branch` skill handles the merge or PR decision.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `confidence-check` — verifies readiness before each implementation task
+- `test-driven-development` — RED-GREEN-REFACTOR cycle
+- `systematic-debugging` — loaded automatically on test failure; no retrying without diagnosis
+- `requesting-code-review` — review gate between tasks
+- `verification-before-completion` — final check before declaring done
+- `finishing-a-development-branch` — merge and PR decision
+
+## Example
+
+```bash
+/implement
+```
+
+Antigravity outputs a session header:
+
+```
+Session: /implement
+Plan: docs/plans/2026-03-17-notification-system.md
+Task: 1 of 8 — Define Notification types
+Confidence: 28/30
+Status: RED phase
+```
+
+It then writes a failing test, implements the minimum code to pass it, commits, runs a review, and moves to Task 2.
+
+<Note>
+Commit cadence is strict: one commit per GREEN test. Never accumulate more than one passing test before committing. If a commit fails, stop immediately and diagnose — do not run another test.
+</Note>
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/plan" href="/commands/plan">
+    Step 2 — writes the plan that /implement executes.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    Step 4 — validate the full implementation against the plan.
+  </Card>
+  <Card title="/test" href="/commands/test">
+    Run tests independently outside of the /implement workflow.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    When /implement hits a bug it can't resolve, use systematic debugging.
+  </Card>
+</CardGroup>

@@ -1,0 +1,90 @@
+---
+title: "/explain"
+description: "Clear explanations of code, concepts, and system behavior at your level."
+---
+
+## What it does
+
+`/explain` provides structured explanations of code, technical concepts, system behavior, and errors. It calibrates depth to the level you specify — or infers the appropriate level from context if you don't.
+
+## When to use
+
+Use `/explain` when you want to understand what a piece of code does, why it's written a certain way, how a concept works, how system components interact, or what an error means and how to fix it.
+
+## Prerequisites
+
+- No specific prerequisites. Point `/explain` at any code, error message, or concept.
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Calibrate explanation level">
+    If you specify a level (`--level basic|intermediate|advanced`), that level is used. Otherwise, Antigravity infers the appropriate level from context — your question phrasing, the complexity of what you're asking about, and any visible code.
+  </Step>
+  <Step title="State the core idea">
+    The explanation starts with the core idea in one sentence before building up.
+  </Step>
+  <Step title="Build with examples">
+    Examples are used to make the concept concrete, connected to things you already know.
+  </Step>
+  <Step title="Conclude with usage guidance">
+    The explanation ends with when to use the pattern or concept — and when not to.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+No skills are invoked. `/explain` is a direct workflow.
+
+## Explanation levels
+
+| Level | What you get |
+|---|---|
+| Basic | Core concept only, plain language, minimal jargon |
+| Intermediate | Mechanics and patterns, some technical depth |
+| Advanced | Implementation details, trade-offs, edge cases |
+
+## What you can explain
+
+- **Code** — what it does, why it's written this way, how to use it
+- **Concepts** — technical ideas, patterns, algorithms
+- **Systems** — how components interact, data flow, architecture
+- **Errors** — what went wrong, why, and how to fix it
+
+## Usage
+
+```bash
+/explain [what to explain]
+/explain [what to explain] --level basic
+/explain [what to explain] --level intermediate
+/explain [what to explain] --level advanced
+```
+
+## Example
+
+```bash
+/explain the difference between optimistic and pessimistic locking --level intermediate
+```
+
+Antigravity starts with the core idea: "Both strategies prevent conflicting writes, but they differ in *when* they check for conflicts." It then explains optimistic locking (check at commit time, retry on conflict) vs pessimistic locking (lock immediately, block others), with a concrete database example for each, and closes with: "Use optimistic locking for low-contention reads; use pessimistic locking when conflicts are frequent and retries are expensive."
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/analyze" href="/commands/analyze">
+    For a structured quality review of code rather than a conceptual explanation.
+  </Card>
+  <Card title="/research" href="/commands/research">
+    When you need sourced, current information rather than a conceptual explanation.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    When an error needs systematic debugging rather than just explanation.
+  </Card>
+  <Card title="/document" href="/commands/document">
+    Turn an explanation into persistent documentation.
+  </Card>
+</CardGroup>

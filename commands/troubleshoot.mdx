@@ -1,0 +1,103 @@
+---
+title: "/troubleshoot"
+description: "Orchestrates systematic debugging sessions."
+---
+
+## What it does
+
+`/troubleshoot` runs a structured four-phase debugging process. It starts by confirming the issue is reproducible, gathers the exact error and context, then works through root cause investigation, pattern analysis, hypothesis testing, and implementation — in that order.
+
+## When to use
+
+Use `/troubleshoot` when you have a bug, test failure, or unexpected behavior to diagnose. Use it for flaky issues, environment-specific failures, and anything that resists ad-hoc guessing.
+
+## Prerequisites
+
+<Warning>
+**Planning Mode must be active** in Antigravity settings. Systematic debugging requires extended reasoning to form and test hypotheses without guessing.
+</Warning>
+
+- An exact error message or description of unexpected behavior
+- Ideally: a stack trace and "when did this last work?"
+
+## Conversation mode
+
+**Planning Mode** — required.
+
+## What happens
+
+<Steps>
+  <Step title="Confirm reproducibility">
+    Before loading any skill, Antigravity asks: "Can you trigger this consistently? Yes/No?" For flaky issues, the protocol changes: Phase 1 priority shifts to timing dependencies, async race conditions, and environment-specific state. Antigravity will not attempt a fix until the failure can be reproduced at least once on demand — or until it can explain why consistent reproduction is impossible.
+  </Step>
+  <Step title="Gather context">
+    The exact error message, stack trace, and "when did this last work?" are collected before investigation begins.
+  </Step>
+  <Step title="Phase 1 — Root cause investigation">
+    The `systematic-debugging` skill leads. The codebase is read, logs are examined, and possible causes are enumerated without guessing.
+  </Step>
+  <Step title="Phase 2 — Pattern analysis">
+    The failure pattern is analyzed: is it consistent, intermittent, environment-specific, or regression-triggered? Related code paths are examined.
+  </Step>
+  <Step title="Phase 3 — Hypothesis and testing">
+    A specific, falsifiable hypothesis is formed. It is tested with targeted instrumentation — not trial-and-error retries.
+  </Step>
+  <Step title="Phase 4 — Implementation">
+    The confirmed root cause is fixed with a minimal targeted change.
+  </Step>
+  <Step title="Verification and regression test">
+    The `verification-before-completion` skill runs before declaring the fix complete. A regression test is written and committed alongside the fix.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `systematic-debugging` — owns the four-phase debugging process
+- `verification-before-completion` — confirms the fix is complete before declaring done
+- `deep-research` — loaded if all four phases complete without resolution, to search official docs and issues
+
+## Commit format after fix
+
+```bash
+fix: [bug description]
+test: [bug description] no longer occurs
+```
+
+## Escalation path
+
+If all four phases complete and the issue is still unresolved:
+
+1. Document in `BLOCKERS.md`: symptom, what was tried, what was ruled out
+2. Load `deep-research` skill to search official docs and open issues
+3. Present findings to you with a specific, targeted question
+
+## What not to do
+
+- Do not retry the same failing command without a new hypothesis
+- Do not declare fixed without running `verification-before-completion`
+- Do not guess and check — form a hypothesis first
+
+## Example
+
+```bash
+/troubleshoot The notification service silently fails in production but works in development
+```
+
+Antigravity asks: "Can you trigger this consistently? Yes/No?" After gathering the error context, it works through all four phases — checking environment variables, connection pool limits, and async error handling — before identifying that uncaught promise rejections were being swallowed in the production error handler. It fixes the handler, writes a regression test, and commits both.
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/analyze" href="/commands/analyze">
+    Proactive code analysis — catch issues before they become bugs.
+  </Card>
+  <Card title="/test" href="/commands/test">
+    Run the test suite to confirm the fix and check for regressions.
+  </Card>
+  <Card title="/research" href="/commands/research">
+    Research unfamiliar error patterns or third-party library issues.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    If troubleshooting reveals a larger design issue, implement the proper fix with TDD.
+  </Card>
+</CardGroup>

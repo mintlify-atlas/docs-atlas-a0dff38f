@@ -1,0 +1,100 @@
+---
+title: "Installation"
+description: "Install SuperAntigravity with one command"
+---
+
+## Prerequisites
+
+Before installing, make sure you have:
+
+- **[Google Antigravity IDE](https://antigravity.google)** installed and working
+- **git** available on your `PATH`
+- An internet connection (the installer clones from GitHub)
+
+## Install command
+
+Run this single command in your terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/install.sh | bash
+```
+
+After the script completes, restart Antigravity. Skills, workflows, and agents load automatically — no configuration required.
+
+## What happens during install
+
+<Steps>
+  <Step title="Clone the repository">
+    The installer creates a temporary directory and does a shallow clone of the
+    `main` branch from `https://github.com/derHaken/SuperAntigravity`. The
+    temporary directory is deleted automatically when the script exits.
+  </Step>
+  <Step title="Install skills">
+    19 skill directories are copied to `~/.gemini/antigravity/skills/`. Each
+    skill contains a `SKILL.md` file that Antigravity reads to trigger the
+    right behavior automatically.
+  </Step>
+  <Step title="Install workflows">
+    16 workflow files are copied to
+    `~/.gemini/antigravity/global_workflows/`. These power the slash commands
+    (`/brainstorm`, `/plan`, `/implement`, `/review`, `/git`) and other
+    explicit workflow controls.
+  </Step>
+  <Step title="Install agents">
+    6 specialist agent definitions are copied to
+    `~/.gemini/antigravity/agents/`. Agents cover code review, architecture,
+    security, research, mentoring, and more.
+  </Step>
+  <Step title="Bootstrap GEMINI.md">
+    The installer appends a `# SuperAntigravity Skills` block to
+    `~/.gemini/GEMINI.md`, creating the file if it does not already exist. This
+    block registers SuperAntigravity with Antigravity's rules system.
+  </Step>
+</Steps>
+
+## Success output
+
+When the install completes successfully, your terminal will show output similar to:
+
+```bash
+Installing SuperAntigravity...
+✓ Repository cloned
+✓ 19 skills installed → ~/.gemini/antigravity/skills/
+✓ 16 workflows installed → ~/.gemini/antigravity/global_workflows/
+✓ 6 agents installed → ~/.gemini/antigravity/agents/
+✓ GEMINI.md updated
+```
+
+## Install marker file
+
+After a successful install, the script writes a manifest to:
+
+```
+~/.gemini/antigravity/.superantigravity-installed
+```
+
+This file records the installed version and install date:
+
+```
+superantigravity-version=1.0.0
+install-date=2026-03-17T00:00:00Z
+```
+
+If this file is present when you run the installer again, you will see a warning that a previous install was detected and that re-running will overwrite existing skills, workflows, and agents.
+
+## Reinstalling or upgrading
+
+To upgrade to the latest version, uninstall first and then reinstall:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/install.sh | bash
+```
+
+The uninstall script removes the `# SuperAntigravity Skills` block from `~/.gemini/GEMINI.md` using the marker, then cleans up the skills, workflows, and agents directories.
+
+<Warning>
+  The `# SuperAntigravity Skills` block cannot be written to `GEMINI.md` twice.
+  If the marker is already present, the installer skips that step and prints a
+  warning. Run the uninstall script first if you need a clean reinstall.
+</Warning>

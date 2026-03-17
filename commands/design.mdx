@@ -1,0 +1,94 @@
+---
+title: "/design"
+description: "System architecture, API, and component design with structured trade-off analysis."
+---
+
+## What it does
+
+`/design` runs the full architecture-design process for systems, APIs, components, or databases. It produces a structured output with constraints, multiple options with trade-offs, a clear recommendation, a decision record, and open questions.
+
+## When to use
+
+Use `/design` when you need to make architectural decisions before building — designing a new API, choosing between approaches, mapping out component relationships, or planning a database schema. Use it as a standalone command or as a precursor to [`/brainstorm`](/commands/brainstorm) when the technical design is complex.
+
+## Prerequisites
+
+- A clear problem or design question to address
+- Run [`/research`](/commands/research) first if the design involves unfamiliar technology or approaches that need current information
+
+## Conversation mode
+
+Either mode works, though Planning Mode is useful for complex architectural decisions.
+
+## What happens
+
+<Steps>
+  <Step title="Load the architecture-design skill">
+    The `architecture-design` skill is loaded and followed for the full design process.
+  </Step>
+  <Step title="Define constraints">
+    What must be true is established first — performance requirements, existing system boundaries, team constraints, and non-negotiables.
+  </Step>
+  <Step title="Develop 2–3 options">
+    Two to three distinct approaches are developed, each with explicit trade-offs. No approach is presented without its downsides.
+  </Step>
+  <Step title="Make a recommendation">
+    A clear recommendation is made with specific reasoning — not a vague "it depends".
+  </Step>
+  <Step title="Write the decision record">
+    What was decided and why is recorded for future reference.
+  </Step>
+  <Step title="Surface open questions">
+    Remaining questions that need resolution before or during implementation are listed explicitly.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `architecture-design` — full design process including constraints, options, trade-offs, and decision record
+
+## Design types
+
+### System architecture
+Component relationships and boundaries, data flow and state management, scalability and reliability considerations, technology choices with trade-offs.
+
+### API design
+Endpoint structure (REST) or schema (GraphQL), request/response formats, authentication and authorization, error handling and status codes, versioning strategy.
+
+### Component design
+Interface contracts, dependencies and coupling, state management, testing approach.
+
+### Database design
+Entity relationships, schema with types and constraints, index strategy, migration approach.
+
+## Example
+
+```bash
+/design a webhook delivery system that retries on failure
+```
+
+Antigravity outputs:
+
+- **Constraints**: Must handle 10k webhooks/day, at-least-once delivery, retry budget of 72 hours
+- **Option 1**: In-process retry with exponential backoff — simple but blocks worker threads
+- **Option 2**: Queue-backed async delivery (Redis + BullMQ) — reliable but adds infrastructure
+- **Option 3**: Database-backed outbox pattern — durable but higher latency
+- **Recommendation**: Option 2 (BullMQ) — best balance of reliability and operational simplicity at this scale
+- **Open questions**: Should failed webhooks after 72h be stored for manual replay?
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/research" href="/commands/research">
+    Run /research first when the design involves unfamiliar technology.
+  </Card>
+  <Card title="/brainstorm" href="/commands/brainstorm">
+    /brainstorm includes a design phase — use /design for standalone architecture work.
+  </Card>
+  <Card title="/analyze" href="/commands/analyze">
+    Analyze existing architecture with the architecture focus.
+  </Card>
+  <Card title="/plan" href="/commands/plan">
+    Convert the design into a bite-sized implementation plan.
+  </Card>
+</CardGroup>

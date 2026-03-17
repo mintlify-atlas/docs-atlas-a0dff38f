@@ -1,0 +1,120 @@
+---
+title: "Writing plans"
+description: "Converts an approved design into a complete, bite-sized implementation plan before any code is written"
+---
+
+The writing-plans skill creates implementation plans that leave nothing to interpretation. Every task in the plan produces exactly one artifact, every command includes expected output, and every file path is exact. The plan assumes the executing engineer has zero context about the codebase.
+
+## When this skill fires
+
+The skill description reads: *"Use when you have a spec or requirements for a multi-step task, before touching code."*
+
+It fires automatically at the end of the brainstorming skill, and also when you start a session with an existing spec or design document ready to implement.
+
+## What it does
+
+Writing-plans produces a structured markdown document saved to `docs/plans/YYYY-MM-DD-<feature-name>.md`. The document is a complete, self-contained guide for implementing the feature using TDD. Someone who has never seen the codebase should be able to execute it without asking a single question.
+
+The skill announces its activation:
+
+> "I'm using the writing-plans skill to create the implementation plan."
+
+## How it works
+
+### Plan structure
+
+Every plan starts with a mandatory header:
+
+```markdown
+# [Feature Name] Implementation Plan
+
+> **For Antigravity:** REQUIRED SUB-SKILL: Load executing-plans to implement this plan task-by-task.
+
+**Goal:** [One sentence describing what this builds]
+
+**Architecture:** [2-3 sentences about approach]
+
+**Tech Stack:** [Key technologies/libraries]
+
+---
+```
+
+### Bite-sized task granularity
+
+The core rule: **each step produces exactly one artifact**. If a step produces two artifacts, split it.
+
+| Artifact | Example step |
+|---|---|
+| Test file | "Write the failing test" |
+| Test run output | "Run it to make sure it fails" |
+| Code file | "Implement the minimal code to make the test pass" |
+| Passing test output | "Run the tests and make sure they pass" |
+| Commit | "Commit" |
+
+### Task format
+
+Each task in the plan follows this structure:
+
+<Steps>
+  <Step title="Write the failing test">
+    Include the complete test code — not a description of what to write, but the actual test.
+  </Step>
+  <Step title="Run test to verify it fails">
+    Include the exact command and the expected failure output. For example: `pytest tests/path/test.py::test_name -v` → Expected: FAIL with "function not defined".
+  </Step>
+  <Step title="Write minimal implementation">
+    Include the complete implementation code. No placeholders, no "add validation here".
+  </Step>
+  <Step title="Run test to verify it passes">
+    Include the exact command and the expected passing output.
+  </Step>
+  <Step title="Commit">
+    Include the exact `git add` and `git commit` commands with the commit message.
+  </Step>
+</Steps>
+
+### Plan validation
+
+Before handing the plan to execution, the skill reads it from the perspective of an engineer who has never seen the codebase. The validation checklist:
+
+- Every file path is exact and follows the documented convention
+- Every command includes expected output
+- Every task's purpose is clear from its name and description alone
+- No task assumes knowledge of a prior conversation or undocumented context
+
+## Execution handoff
+
+After saving the plan, the skill offers two execution options:
+
+**Option 1 — Subagent-driven (this session):** Fresh subagent per task, code review between tasks, fast iteration. Requires switching Antigravity to **Fast Mode**.
+
+**Option 2 — Parallel session (separate):** Open a new session with the executing-plans skill, batch execution with checkpoints.
+
+Both options load the `executing-plans` skill.
+
+## Example scenario
+
+You have an approved design for a notifications feature. The writing-plans skill:
+1. Creates `docs/plans/2026-03-17-notifications.md`
+2. Writes Task 1: create the `notifications` table migration with failing test, run command, implementation, passing run, commit
+3. Writes Task 2: create the `NotificationWorker` class with failing test, implementation, passing run, commit
+4. Validates each task has enough context to execute without questions
+5. Presents two execution options and waits for your choice
+
+<Tip>
+Plan files are committed to git. If something goes wrong mid-implementation, you can always come back to the plan and see exactly what was intended.
+</Tip>
+
+## Related skills
+
+<CardGroup cols={2}>
+  <Card title="Brainstorming" href="/skills/brainstorming">
+    Produces the approved design that writing-plans converts into tasks.
+  </Card>
+  <Card title="Executing plans" href="/skills/executing-plans">
+    Consumes the plan document and implements it in batches.
+  </Card>
+  <Card title="Test-driven development" href="/skills/test-driven-development">
+    The TDD cycle that every task in the plan follows.
+  </Card>
+</CardGroup>

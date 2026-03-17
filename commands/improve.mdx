@@ -1,0 +1,111 @@
+---
+title: "/improve"
+description: "Apply systematic improvements to code quality, performance, and maintainability."
+---
+
+## What it does
+
+`/improve` applies targeted improvements to your code across quality, performance, security, and maintainability dimensions. It follows strict rules: measure before improving performance, test before and after refactoring, and commit one improvement at a time.
+
+## When to use
+
+Use `/improve` after [`/analyze`](/commands/analyze) has identified issues, after a code review surfaces improvement opportunities, or when you want to proactively reduce technical debt in a specific area.
+
+## Prerequisites
+
+- Tests passing before starting — you need a green baseline to verify improvements don't break behavior
+- For performance improvements: baseline measurements must exist (or will be created before any changes)
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Identify improvement targets">
+    The specific areas to improve are identified — from /analyze output, review feedback, or your direct request.
+  </Step>
+  <Step title="Apply quality improvements">
+    Duplicated logic is extracted into reusable functions, complex conditionals are simplified, naming is improved for clarity, and long functions are reduced.
+  </Step>
+  <Step title="Apply performance improvements">
+    The `performance-optimization` skill is loaded. Performance is measured before any change — no optimization without baseline data.
+  </Step>
+  <Step title="Apply security improvements">
+    The `security-review` skill is loaded to check for vulnerabilities before and after changes.
+  </Step>
+  <Step title="Apply maintainability improvements">
+    Missing error handling at system boundaries is added, test coverage for critical paths is improved, over-engineered abstractions are simplified, and non-obvious decisions are documented.
+  </Step>
+  <Step title="Test between each improvement">
+    Tests run before and after every refactoring step. One improvement is committed at a time.
+  </Step>
+  <Step title="Verify before declaring done">
+    The `verification-before-completion` skill runs before the improvement session is closed.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `performance-optimization` — measurement-first performance improvement
+- `security-review` — vulnerability check for security improvements
+- `verification-before-completion` — final check before declaring improved
+
+## Improvement categories
+
+### Code quality
+- Extract duplicated logic into reusable functions
+- Simplify complex conditionals
+- Improve naming for clarity
+- Reduce function and method length
+
+### Performance
+Load `performance-optimization` skill — measure before improving.
+
+### Security
+Load `security-review` skill — check for vulnerabilities.
+
+### Maintainability
+- Add missing error handling at system boundaries
+- Improve test coverage for critical paths
+- Simplify over-engineered abstractions
+- Document non-obvious decisions
+
+## Rules
+
+- Measure before improving performance
+- Test before and after any refactoring
+- One improvement at a time — commit between each
+- YAGNI — don't add abstractions for hypothetical future needs
+
+## Example
+
+```bash
+/improve the authentication module
+```
+
+Antigravity identifies issues from a previous `/analyze` run: a 120-line `validateUser` function, missing error handling on the token refresh path, and an N+1 query in the session lookup. It addresses each one separately, running tests between each change and committing:
+
+```
+refactor(auth): extract token validation to separate function
+fix(auth): add error handling on token refresh failure path  
+perf(auth): replace N+1 session lookup with single batched query
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/analyze" href="/commands/analyze">
+    Run /analyze first to identify what needs improving.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    Code review often surfaces the improvement opportunities that /improve addresses.
+  </Card>
+  <Card title="/cleanup" href="/commands/cleanup">
+    For removing dead code and unused imports rather than improving live code.
+  </Card>
+  <Card title="/test" href="/commands/test">
+    Verify test coverage after improvements, especially for maintainability changes.
+  </Card>
+</CardGroup>

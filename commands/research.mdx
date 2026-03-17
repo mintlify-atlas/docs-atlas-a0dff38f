@@ -1,0 +1,101 @@
+---
+title: "/research"
+description: "Multi-source research before acting on unknowns. Produces sourced findings with confidence levels ready for downstream use."
+---
+
+## What it does
+
+`/research` runs a structured, multi-source research process that produces sourced findings with explicit confidence levels. Rather than acting on assumptions or training-data knowledge, it gathers current information and validates it before handing findings to a downstream workflow.
+
+## When to use
+
+Use `/research` before implementing with unfamiliar technology, validating an approach, comparing options, or answering questions that need current information.
+
+**When not to use:** If the answer is in the existing codebase, read the code first. `/research` is for unknowns that require external sources.
+
+## Prerequisites
+
+<Warning>
+**Planning Mode must be active** in Antigravity settings. Deep research requires extended reasoning to evaluate source quality and detect contradictions across multiple sources.
+</Warning>
+
+## Conversation mode
+
+**Planning Mode** — required.
+
+## What happens
+
+<Steps>
+  <Step title="Session announcement">
+    Antigravity outputs a session header listing the specific questions to be answered and what decisions depend on each answer.
+  </Step>
+  <Step title="List questions explicitly">
+    Before any searching, all questions are stated explicitly. Each question is tied to a downstream decision it will inform.
+  </Step>
+  <Step title="Load the deep-research skill">
+    The `deep-research` skill runs its full 5-step process: source discovery, source quality ranking, claim extraction, cross-source corroboration, and confidence assignment.
+  </Step>
+  <Step title="Apply quality gate">
+    The deep-research quality checklist must score 4/5 before findings can be acted on. If it scores below 4/5, more sources are gathered. Low-confidence findings are never handed off to `/brainstorm`, `/plan`, or `/design`.
+  </Step>
+  <Step title="State decision alignment">
+    Before handing off, Antigravity explicitly states: "Decision: [what I'm about to decide]. Finding that supports it: [key finding + confidence]".
+  </Step>
+  <Step title="Hand off to downstream workflow">
+    Findings are passed to the appropriate workflow: `/brainstorm` for feasibility, `/plan` for architecture confirmation, `/design` for options evaluation, or directly to you if you asked a question.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `deep-research` — 5-step multi-source research process with source quality ranking
+
+## Example
+
+```bash
+/research Is Prisma ORM suitable for a Node.js app with 50k daily active users?
+```
+
+Antigravity outputs:
+
+```
+Session: /research
+Questions: Is Prisma ORM suitable for 50k DAU Node.js app?
+
+Research complete.
+
+Question: Is Prisma ORM suitable for a Node.js app with 50k daily active users?
+Finding: Yes, with connection pooling (PgBouncer) required for high concurrency.
+Confidence: High — 3 primary sources agree
+Sources:
+  - prisma.io/docs/guides/performance/connection-pool (official)
+  - prisma.io/blog/prisma-at-scale (official blog, 2024)
+  - github.com/prisma/prisma/issues/12345 (confirmed at scale by maintainer)
+Caveats: Benchmarks from 2024; Prisma 6.x characteristics may differ.
+
+Quality checklist: 5/5 ✓
+Decision: Use Prisma with PgBouncer for connection pooling.
+
+Handing off to: /plan (architecture confirmation)
+```
+
+<Note>
+Antigravity will never present training-data knowledge as researched knowledge. If sources are inaccessible, it announces the failure reason and confidence level explicitly before presenting any findings.
+</Note>
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/brainstorm" href="/commands/brainstorm">
+    Run /research before /brainstorm to validate technical feasibility of approaches.
+  </Card>
+  <Card title="/plan" href="/commands/plan">
+    Run /research before /plan to confirm architecture decisions with sourced evidence.
+  </Card>
+  <Card title="/design" href="/commands/design">
+    Run /research before /design to evaluate options with current information.
+  </Card>
+  <Card title="/analyze" href="/commands/analyze">
+    For analysis of existing code rather than external unknowns.
+  </Card>
+</CardGroup>

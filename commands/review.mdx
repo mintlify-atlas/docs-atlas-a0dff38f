@@ -1,0 +1,107 @@
+---
+title: "/review"
+description: "Code review against plan, requirements, and quality standards."
+---
+
+## What it does
+
+`/review` runs a structured code review against your implementation plan, requirements, and quality standards. It checks plan compliance, code quality, security, and performance — and assigns severity levels to each issue found.
+
+This is Step 4 in the core workflow — run after [`/implement`](/commands/implement) and before [`/git`](/commands/git).
+
+## When to use
+
+Use `/review` after implementation is complete to validate the work before committing. Also useful as a standalone review of any code changes.
+
+## Prerequisites
+
+- Implementation complete
+- Tests passing
+- An implementation plan to review against (for plan compliance checks)
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Load the code-reviewer agent">
+    The `code-reviewer` agent is loaded for the full review process.
+  </Step>
+  <Step title="Plan compliance check">
+    Does the implementation match what was planned? Are all acceptance criteria met? Is there any scope creep — things added that weren't in the plan?
+  </Step>
+  <Step title="Code quality check">
+    Is the code readable without comments to explain it? Are functions doing one thing? Is error handling present at system boundaries? Are there tests for the new behavior?
+  </Step>
+  <Step title="Security check">
+    Any user input that isn't validated? Any secrets or credentials in the code? Any new endpoints missing authorization?
+  </Step>
+  <Step title="Performance check">
+    Any N+1 queries (loop containing a database call)? Any synchronous blocking I/O in an async context? Any unbounded data fetching (missing LIMIT on queries)? Any unnecessary re-computation inside loops?
+  </Step>
+  <Step title="Report findings with severity">
+    Each issue is reported with a severity level: Critical (blocks shipping), High (should fix before shipping), Medium (fix soon), or Low (nice to have).
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `code-reviewer` agent — full review process across all four checklist domains
+
+## Issue severity
+
+| Severity | Meaning |
+|---|---|
+| Critical | Blocks shipping — security vulnerabilities, broken functionality |
+| High | Should fix before shipping — significant quality issues |
+| Medium | Fix soon — technical debt, missing tests |
+| Low | Nice to have — style, minor improvements |
+
+## Example
+
+```bash
+/review
+```
+
+Antigravity outputs:
+
+```
+=== CODE REVIEW ===
+Task reviewed: notification delivery implementation
+Reviewer: code-reviewer agent
+
+PLAN COMPLIANCE: PASS
+- All acceptance criteria met
+- No scope creep detected
+
+CODE QUALITY: 2 issues
+- MEDIUM: service.ts:87 — function is 94 lines, extract retry logic to separate function
+- LOW: Missing error message context in catch block at service.ts:124
+
+SECURITY: PASS (no auth/input handling changes)
+
+PERFORMANCE: 1 issue
+- HIGH: service.ts:52 — N+1 query inside notification loop, batch the lookups
+
+OVERALL: CHANGES REQUESTED
+Blocker count: 1 | Suggestions: 2
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/implement" href="/commands/implement">
+    Step 3 — /review runs after implementation is complete.
+  </Card>
+  <Card title="/git" href="/commands/git">
+    Step 5 — commit and push after /review passes.
+  </Card>
+  <Card title="/analyze" href="/commands/analyze">
+    For deeper technical analysis beyond what /review's checklist covers.
+  </Card>
+  <Card title="/improve" href="/commands/improve">
+    Apply the improvements that /review identifies.
+  </Card>
+</CardGroup>

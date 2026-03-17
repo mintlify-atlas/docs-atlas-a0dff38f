@@ -1,0 +1,78 @@
+---
+title: "Conversation modes"
+description: "Planning Mode and Fast Mode — choosing the right mode for each workflow stage"
+---
+
+Antigravity has two conversation modes that affect how the agent approaches work. SuperAntigravity is built around these modes: certain skills and workflows are optimized for one mode or the other, and the agent will prompt you if your current mode doesn't match the work phase.
+
+<Tabs>
+  <Tab title="Planning Mode">
+    **Planning Mode** is for deep thinking, design, and complex problem-solving. Use it when you need the agent to reason carefully before acting.
+
+    **When to use it:**
+    - Running `/brainstorm` to design a feature before writing code
+    - Running `/plan` to produce a bite-sized implementation plan
+    - Running `/research` or `/troubleshoot` for investigation
+    - Any task involving architecture decisions, trade-off analysis, or requirements discovery
+
+    **Skills that require Planning Mode:**
+
+    | Skill | Why Planning Mode |
+    |-------|------------------|
+    | `brainstorming` | Collaborative design before any code |
+    | `writing-plans` | Structured plan creation |
+    | `systematic-debugging` | Methodical investigation and isolation |
+    | `deep-research` | Multi-source information gathering |
+    | `architecture-design` | Option evaluation and trade-off analysis |
+    | `security-review` | Careful review of auth and sensitive paths |
+  </Tab>
+
+  <Tab title="Fast Mode">
+    **Fast Mode** is for direct execution, mechanical tasks, and repetitive implementation steps where the plan is already approved.
+
+    **When to use it:**
+    - Running `/implement` to execute an approved plan
+    - Running `/test` to run tests with coverage
+    - Batch execution tasks where decisions are already made
+
+    **Skills that require Fast Mode:**
+
+    | Skill | Why Fast Mode |
+    |-------|---------------|
+    | `executing-plans` | Direct mechanical execution of written tasks |
+    | `test-driven-development` | Focused code generation with TDD steps |
+    | `subagent-driven-development` | Parallel subagent execution per task |
+    | `performance-optimization` | Targeted profiling and code changes |
+    | `confidence-check` | Rapid pre-implementation readiness check |
+  </Tab>
+</Tabs>
+
+## How the agent handles a mode mismatch
+
+SuperAntigravity tracks which mode is appropriate for each phase of work. If you start a planning-phase skill while in Fast Mode — or an execution-phase skill while in Planning Mode — the agent will pause and prompt you:
+
+> *"I am starting a [Planning/Execution] phase. Please switch to [Planning/Fast] mode in the conversation settings for optimal performance."
+
+This is intentional. The prompt is not a suggestion — switching modes ensures the agent uses the right reasoning depth for the task.
+
+## How to switch modes
+
+Mode is controlled in Antigravity's conversation settings. Look for the mode toggle in the conversation header or settings panel and switch between **Planning** and **Fast** before starting a new phase of work.
+
+<Tip>
+  Follow the SuperAntigravity workflow in order — `/brainstorm` → `/plan` → `/implement` → `/review` → `/git` — and you'll naturally flow between Planning Mode for the early phases and Fast Mode for execution.
+</Tip>
+
+## Quick reference
+
+| Phase | Command | Mode |
+|-------|---------|------|
+| Requirements discovery | `/brainstorm` | Planning Mode |
+| Write implementation plan | `/plan` | Planning Mode |
+| Deep investigation | `/research` | Planning Mode |
+| Architecture design | `/design` | Planning Mode |
+| Systematic debugging | `/troubleshoot` | Planning Mode |
+| Feature implementation | `/implement` | Fast Mode |
+| Run tests | `/test` | Fast Mode |
+| Build and package | `/build` | Fast Mode |
+| Git operations | `/git` | Fast Mode |

@@ -1,0 +1,125 @@
+---
+title: "/git"
+description: "Smart git operations with pre-ship verification"
+---
+
+`/git` is the final stage of the pipeline. It runs pre-ship verification, then handles commit messages, branch operations, and the merge or PR decision using safe defaults and structured protocols.
+
+## Pre-ship verification
+
+Before any git operation that ships code, SuperAntigravity loads the verification-before-completion skill. No completion claims are made without fresh verification evidence — meaning the test suite is run in full and the output is read before any success claim is made.
+
+Then the finishing-a-development-branch skill presents exactly four options:
+
+```
+Implementation complete. What would you like to do?
+
+1. Merge back to <base-branch> locally
+2. Push and create a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
+```
+
+## Smart commit protocol
+
+For individual commits during `/implement` or when running `/git` directly:
+
+<Steps>
+  <Step title="Run git status">
+    Understand what changed. Never commit blindly.
+  </Step>
+  <Step title="Run git diff">
+    Review actual changes before staging anything.
+  </Step>
+  <Step title="Stage specific files">
+    Stage only the files that belong to this commit. `git add .` is never used blindly.
+  </Step>
+  <Step title="Generate commit message">
+    Write a message following Conventional Commits format (see below).
+  </Step>
+  <Step title="Commit">
+    Commit with the generated message.
+  </Step>
+</Steps>
+
+## Commit message format
+
+All commit messages follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+type(scope): short description
+
+Optional longer explanation of WHY, not what.
+```
+
+| Prefix | Use for |
+|--------|---------|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `refactor:` | Code change without behavior change |
+| `test:` | Test additions or changes |
+| `docs:` | Documentation only |
+| `chore:` | Maintenance tasks |
+
+<Note>
+During `/implement`, commits use the `test:` prefix with the format `test: [what behavior is now tested]`. This links each commit directly to the behavior it verifies.
+</Note>
+
+## Branch naming
+
+| Type | Pattern | Example |
+|------|---------|---------||
+| Feature | `feat/description` | `feat/user-auth` |
+| Fix | `fix/description` | `fix/token-expiry` |
+| Experiment | `experiment/description` | `experiment/new-cache-layer` |
+
+## Common operations
+
+```bash
+git status                    # What changed
+git diff                      # Review changes
+git add path/to/file          # Stage specific files
+git commit -m "feat: add X"   # Commit with message
+git log --oneline -10         # Recent history
+git stash                     # Save work temporarily
+```
+
+## Safety rules
+
+These rules are enforced unconditionally:
+
+<Warning>
+- **Never** force push to `main` or `master`
+- **Never** commit secrets, `.env` files, or credentials
+- **Never** skip pre-commit hooks with `--no-verify`
+- **Never** amend published commits
+- **Always** investigate before using `--force`
+</Warning>
+
+If you explicitly request a force push to `main` or `master`, SuperAntigravity will warn you and ask for confirmation before proceeding.
+
+## Finishing a development branch
+
+When SuperAntigravity reaches the end of `/implement`, the finishing-a-development-branch skill guides the merge or PR decision:
+
+<Steps>
+  <Step title="Verify tests">
+    Runs the full test suite. If tests fail, the process stops here. Merge or PR options are not presented until tests pass.
+  </Step>
+  <Step title="Determine base branch">
+    Identifies the branch this feature branched from — typically `main` or `master`.
+  </Step>
+  <Step title="Present options">
+    Shows the four structured options (merge locally, create PR, keep as-is, discard).
+  </Step>
+  <Step title="Execute choice">
+    Runs the chosen option. For a local merge, runs tests on the merged result before deleting the feature branch. For a PR, pushes the branch and creates the PR with a summary and test plan.
+  </Step>
+  <Step title="Clean up worktree">
+    Removes the worktree for options 1 (merge) and 4 (discard). Keeps the worktree for options 2 (PR) and 3 (keep as-is).
+  </Step>
+</Steps>
+
+<Tip>
+Choosing "Discard this work" requires you to type the word `discard` to confirm. This prevents accidental deletion of committed work.
+</Tip>

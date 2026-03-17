@@ -1,0 +1,83 @@
+---
+title: "Agents overview"
+description: "6 specialist agents for code review, architecture, security, and more"
+---
+
+Agents are specialist AI personas that you can invoke during development. Each agent has a defined identity, area of expertise, and operating principles. They behave differently from skills: skills carry process instructions that fire automatically, while agents carry personas that you invoke deliberately for their particular expertise.
+
+## Agents vs. skills
+
+| | Skills | Agents |
+|---|---|---|
+| **How they work** | Process instructions | AI personas with defined identity |
+| **Activation** | Fire automatically by context | Invoked explicitly |
+| **Output** | Step-by-step guidance | Expert analysis in the agent's voice |
+| **Stored in** | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/agents/` |
+
+## How to invoke an agent
+
+Reference an agent by name in your message to Antigravity:
+
+```
+Using the backend-architect agent, review this API design.
+```
+
+```
+Act as the security-engineer agent and review this authentication flow.
+```
+
+Some agents are invoked automatically by commands — for example, `/review` uses the `code-reviewer` agent, and `code-reviewer` can delegate to `security-engineer` for security-specific review.
+
+## All agents
+
+| Agent | Specializes in |
+|-------|----------------|
+| `code-reviewer` | Reviews implementation against plan and quality standards |
+| `backend-architect` | Backend systems, APIs, databases, reliability |
+| `frontend-architect` | UI components, state management, performance |
+| `security-engineer` | Vulnerability review, auth design, threat modeling |
+| `deep-research` | Multi-source research with source quality ranking |
+| `system-architect` | Distributed systems, migrations, observability |
+| `socratic-mentor` | Educational guide using Socratic discovery learning |
+| `repo-index` | Repository context compression and session initialization |
+
+## The review verdict system
+
+The `code-reviewer` agent renders one of three verdicts at the end of every review:
+
+- **APPROVED** — implementation meets the plan and quality bar; ready to merge
+- **APPROVED WITH SUGGESTIONS** — implementation is sound but has non-blocking improvements worth addressing
+- **CHANGES REQUIRED** — critical or important issues must be fixed before merging
+
+A review is only complete when all 6 review areas have been covered and a verdict has been rendered.
+
+## Customizing agents
+
+Agent files live in `~/.gemini/antigravity/agents/`. Each file is a plain Markdown file with a YAML frontmatter block (`name`, `description`) and a system prompt body. You can edit any agent file to adjust its persona, focus areas, or output format to suit your project.
+
+<CardGroup cols={2}>
+  <Card title="Code reviewer" href="/agents/code-reviewer">
+    Reviews implementation against the plan across 6 structured areas and renders a verdict.
+  </Card>
+  <Card title="Backend architect" href="/agents/backend-architect">
+    Designs reliable, scalable server-side systems: APIs, databases, and service boundaries.
+  </Card>
+  <Card title="Frontend architect" href="/agents/frontend-architect">
+    Builds maintainable, performant UIs: component design, state management, and accessibility.
+  </Card>
+  <Card title="Security engineer" href="/agents/security-engineer">
+    Identifies vulnerabilities, models threats, and designs secure systems using OWASP.
+  </Card>
+  <Card title="Deep research" href="/agents/deep-research">
+    Gathers multi-source research with explicit source quality ranking and confidence levels.
+  </Card>
+  <Card title="System architect" href="/agents/system-architect">
+    Holistic system design across service boundaries, distributed systems, and migrations.
+  </Card>
+  <Card title="Socratic mentor" href="/agents/socratic-mentor">
+    Guides learning through strategic questioning rather than direct answers.
+  </Card>
+  <Card title="Repo index" href="/agents/repo-index">
+    Compresses repository context at session start for token-efficient subsequent work.
+  </Card>
+</CardGroup>

@@ -1,0 +1,104 @@
+---
+title: "/analyze"
+description: "Comprehensive code analysis across quality, security, performance, and architecture."
+---
+
+## What it does
+
+`/analyze` runs a comprehensive review across four domains: code quality, security, performance, and architecture. You can target a specific domain or run all four for a full report. Each finding is reported with a severity level and a specific fix recommendation.
+
+## When to use
+
+Use `/analyze` when you want an objective assessment of your codebase — before a major refactor, after a sprint, when onboarding to an existing codebase, or as a pre-ship checklist. For a focused security review run with `--focus security`; for a performance investigation use `--focus performance`.
+
+## Prerequisites
+
+- The code you want to analyze is present in the working directory
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Quality analysis">
+    Code smells, duplication, complexity, maintainability index, dead code, unused imports, and naming conventions are reviewed.
+  </Step>
+  <Step title="Security analysis">
+    The `security-review` skill is loaded for the full OWASP checklist — auth, input handling, secrets exposure, and sensitive data handling.
+  </Step>
+  <Step title="Performance analysis">
+    The `performance-optimization` skill is loaded. Performance is measured before analyzing — no recommendations without data.
+  </Step>
+  <Step title="Architecture analysis">
+    The `architecture-design` skill is loaded for structural analysis — component relationships, boundaries, coupling, and cohesion.
+  </Step>
+  <Step title="Report findings">
+    Each finding is reported with: domain, severity, location (file:line), description, and a specific fix recommendation.
+  </Step>
+  <Step title="Prioritize actions">
+    Critical and High findings must be fixed before proceeding. Medium findings become tasks. Low and Info findings are documented for future improvement.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `security-review` — OWASP checklist for security domain
+- `performance-optimization` — measurement-first performance analysis
+- `architecture-design` — structural and coupling analysis
+
+## Usage
+
+```bash
+/analyze
+/analyze --focus quality
+/analyze --focus security
+/analyze --focus performance
+/analyze --focus architecture
+```
+
+## Output format
+
+For each finding:
+
+| Field | Description |
+|---|---|
+| Domain | quality / security / performance / architecture |
+| Severity | critical / high / medium / low / info |
+| Location | file:line |
+| Issue | What's wrong |
+| Recommendation | Specific fix |
+
+## Example
+
+```bash
+/analyze --focus security
+```
+
+Antigravity loads the `security-review` skill and reports findings like:
+
+```
+Domain: security
+Severity: HIGH
+Location: src/api/users.js:47
+Issue: User input from req.body.username passed directly to SQL query — SQL injection risk
+Recommendation: Use parameterized queries: db.query('SELECT * FROM users WHERE id = ?', [req.body.username])
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/improve" href="/commands/improve">
+    Apply the fixes that /analyze identifies.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    Code review against plan compliance — complements /analyze's technical focus.
+  </Card>
+  <Card title="/troubleshoot" href="/commands/troubleshoot">
+    For issues that /analyze surfaces that require deep debugging.
+  </Card>
+  <Card title="/design" href="/commands/design">
+    Address architectural issues that /analyze flags by redesigning the affected components.
+  </Card>
+</CardGroup>

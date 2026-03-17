@@ -1,0 +1,73 @@
+---
+title: "Uninstall"
+description: "Remove SuperAntigravity from Google Antigravity"
+---
+
+## Uninstall command
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/uninstall.sh | bash
+```
+
+The script will ask for confirmation before removing anything.
+
+## What gets removed
+
+The uninstaller removes the following:
+
+<Steps>
+  <Step title="Skills">
+    All 19 skill directories are deleted from `~/.gemini/antigravity/skills/`.
+  </Step>
+
+  <Step title="Workflows">
+    All 16 workflow files are deleted from `~/.gemini/antigravity/global_workflows/`.
+  </Step>
+
+  <Step title="Agents">
+    All agent files are deleted from `~/.gemini/antigravity/agents/`.
+  </Step>
+
+  <Step title="GEMINI.md bootstrap block">
+    The `# SuperAntigravity Skills` block is stripped from `~/.gemini/GEMINI.md`. The script uses a regex to find the marker and remove everything from it to the end of the file, then saves the cleaned content.
+  </Step>
+
+  <Step title="Manifest file">
+    The install marker file at `~/.gemini/antigravity/.superantigravity-installed` is removed.
+  </Step>
+</Steps>
+
+## What does NOT get removed
+
+- **Your `~/.gemini/GEMINI.md` file** — only the SuperAntigravity block is stripped. Any content you added before or after the block is preserved.
+- **The `~/.gemini/antigravity/` directory itself** — the parent directory is left in place in case you have other files there.
+- **Any skills, workflows, or agents you created yourself** — the uninstaller only removes files it knows about from the original install. Custom files you added are not touched.
+
+<Note>
+  If the uninstaller does not find the `# SuperAntigravity Skills` marker in your `GEMINI.md`, it will warn you and skip that step. This can happen if you manually removed the block or never completed a full install.
+</Note>
+
+## Reinstalling after uninstall
+
+Once uninstalled, you can reinstall from scratch with the same install command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/derHaken/SuperAntigravity/main/install.sh | bash
+```
+
+The installer checks for the `# SuperAntigravity Skills` marker before appending the bootstrap block. If the uninstaller already removed it, the reinstall proceeds cleanly.
+
+<Tip>
+  If you want to update SuperAntigravity to a newer version, run the uninstall script first, then run the install script. This ensures you get fresh copies of all skills, workflows, and agents rather than stale files from a previous install.
+</Tip>
+
+## The install marker file
+
+When the installer completes successfully, it writes a marker file to `~/.gemini/antigravity/.superantigravity-installed` containing the version and install date:
+
+```
+superantigravity-version=1.0.0
+install-date=2026-01-15T10:30:00Z
+```
+
+The installer uses this file to detect a previous install and warn you before overwriting. The uninstaller removes it as part of cleanup.

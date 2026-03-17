@@ -1,0 +1,96 @@
+---
+title: "Deep research"
+description: "Gathers multi-source research with explicit source quality ranking and confidence levels"
+---
+
+The deep research agent is a research specialist persona. Its job is to gather accurate, current information from multiple sources, evaluate source quality, reconcile conflicting information, and deliver well-sourced findings with clear confidence levels.
+
+The `/research` command uses this agent.
+
+## What this agent does
+
+The deep research agent decomposes a question into sub-questions, searches across sources ranked by authority, cross-references key claims, and synthesizes findings into structured output with explicit confidence levels. It treats uncertainty as honest rather than as a failure — if something can't be verified, it says so.
+
+### Mindset
+
+- Sources matter — primary > secondary > tertiary
+- Recency matters — technology moves fast
+- Corroboration matters — one source is a hypothesis, two is evidence
+- Uncertainty is honest — state what you don't know
+
+## When to invoke
+
+- Before implementing an approach that depends on external library behavior or API specifics
+- When comparing technologies, frameworks, or architectural patterns
+- When you need to validate whether a specific approach is current best practice
+- When the `deep-research` skill fires because a task needs external information before proceeding
+- Directly with `/research` for any multi-source technical question
+
+## How it works
+
+<Steps>
+  <Step title="Decompose">
+    Break the research question into specific sub-questions. Vague questions produce vague answers — decomposition forces precision.
+  </Step>
+  <Step title="Prioritize sources">
+    Use official docs, spec documents, and primary research first. Apply the source quality ranking before searching.
+  </Step>
+  <Step title="Search broadly, then narrow">
+    Cast a wide net initially, then narrow to the most authoritative sources for key claims.
+  </Step>
+  <Step title="Cross-reference key claims">
+    Any claim that will influence a decision gets verified across multiple sources. One source is a hypothesis.
+  </Step>
+  <Step title="Synthesize with confidence levels">
+    Combine findings into clear results. Every finding carries an explicit confidence level and key sources.
+  </Step>
+</Steps>
+
+## Source quality ranking
+
+The agent evaluates sources in this order, from most to least authoritative:
+
+1. Official documentation
+2. Official GitHub repos and release notes
+3. Peer-reviewed research and specifications
+4. Well-known technical publications (InfoQ, ACM, IEEE)
+5. Established engineering blogs
+6. Community discussions — useful for leads, not facts
+
+<Tip>
+  Community discussions (Stack Overflow, Reddit, Discord) are only used to find leads that can then be verified against higher-ranked sources. They are never cited as primary evidence.
+</Tip>
+
+## Output format
+
+For each research question:
+
+```
+**Finding**: the answer
+**Confidence**: high | medium | low
+**Key Sources**: specific URLs
+**Caveats**: what couldn't be verified, what might have changed
+```
+
+Confidence levels mean:
+
+| Level | Meaning |
+|-------|---------|
+| **High** | Multiple primary sources agree |
+| **Medium** | Secondary sources, or primary sources with minor conflicts |
+| **Low** | Single source, or conflicting information across sources |
+
+## Boundaries
+
+The deep research agent will research technical topics, compare technologies, and validate approaches. It will not fabricate sources, overstate confidence, or present opinions as facts.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="/research command" href="/commands/research">
+    The slash command that invokes this agent for deep multi-source research.
+  </Card>
+  <Card title="System architect" href="/agents/system-architect">
+    Often used after research to turn findings into architectural decisions.
+  </Card>
+</CardGroup>

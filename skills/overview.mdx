@@ -1,0 +1,138 @@
+---
+title: "Skills overview"
+description: "19 auto-triggered skills that enhance Antigravity with structured workflows"
+---
+
+SuperAntigravity installs 19 skills into `~/.gemini/antigravity/skills/`. Antigravity loads a skill automatically whenever your task context matches the skill's description — no commands required. Once loaded, the skill governs how the agent approaches that task.
+
+## How skills work
+
+Every skill is a markdown file with a `name` and `description` in its frontmatter. When you start a task, Antigravity checks all skill descriptions against your current context. If one matches, it loads the full skill content and the agent follows its process.
+
+The bootstrap block in `GEMINI.md` enforces a mandatory skill-check protocol:
+
+<Note>
+Before every response, Antigravity announces "Checking applicable skills..." — even for clarifying questions, even when no skill applies. Silence is not a valid skill check.
+</Note>
+
+## The mandatory skill-check protocol
+
+The `using-superantigravity` skill establishes the rule: **if you think there is even a 1% chance a skill might apply, you must let Antigravity load and read it.** The check is complete only when the agent has either announced which skill was loaded or stated explicitly that no skill matched.
+
+Common rationalizations that indicate the protocol is being skipped:
+
+| Thought | Reality |
+|---|---|
+| "This is just a simple question" | Questions are tasks. Check for skills. |
+| "I need more context first" | Skill check comes before clarifying questions. |
+| "I already know this skill" | Skills evolve. Let Antigravity load the current version. |
+| "The skill is overkill" | Simple things become complex. Use it. |
+
+## Skill priority
+
+When multiple skills could apply, follow this order:
+
+1. **Process skills first** — `brainstorming` and `systematic-debugging` define *how* to approach the task before any implementation begins.
+2. **Implementation skills second** — `architecture-design`, `deep-research`, and similar skills guide execution once the approach is clear.
+
+Examples:
+- "Let's build X" → load `brainstorming` first, then implementation skills
+- "Fix this bug" → load `systematic-debugging` first, then domain-specific skills
+
+## Skill types
+
+**Rigid skills** must be followed exactly, step by step. Deviating from the process defeats its purpose:
+- `test-driven-development` — the red-green-refactor cycle is non-negotiable
+- `systematic-debugging` — the four phases must complete in order
+
+**Flexible skills** provide principles and patterns you adapt to your context. The skill itself tells you which type it is.
+
+## Conversation modes
+
+Antigravity has two conversation modes. Skills tell you which to use:
+
+- **Planning Mode** — required for `brainstorming`, `writing-plans`, `deep-research`, and `systematic-debugging`
+- **Fast Mode** — recommended for `executing-plans`, `test-driven-development`, and batch implementation
+
+If the current mode doesn't match the work phase, the skill will prompt you to switch.
+
+## Workflow pipeline skills
+
+Adapted from [Superpowers](https://github.com/obra/superpowers). These skills form a sequential development pipeline from idea to merged branch.
+
+| Skill | Fires when... |
+|---|---|
+| `brainstorming` | You want to build something new or add a feature |
+| `writing-plans` | You have an approved design ready to implement |
+| `executing-plans` | You have a written implementation plan to execute |
+| `test-driven-development` | You are implementing any feature or bug fix |
+| `systematic-debugging` | You encounter a bug, test failure, or unexpected behavior |
+| `verification-before-completion` | You are about to claim something is done |
+
+## Specialist skills
+
+Adapted from [SuperClaude](https://github.com/NomenAK/SuperClaude). These skills fire based on the nature of the task rather than its position in the pipeline.
+
+| Skill | Fires when... |
+|---|---|
+| `deep-research` | The task needs external information before proceeding |
+| `architecture-design` | You are designing systems, APIs, or significant features |
+| `security-review` | Code touches auth, input handling, or sensitive data |
+| `performance-optimization` | Code needs profiling and optimization |
+| `confidence-check` | You are about to implement and want to verify readiness |
+| `browser-agent` | Testing UI flows, verifying web app behavior, browser automation |
+| `dependency-management` | Adding, updating, auditing, or evaluating project dependencies |
+
+## Skill categories
+
+<CardGroup cols={2}>
+  <Card title="Brainstorming" href="/skills/brainstorming">
+    Turns ideas into approved designs before any code is written.
+  </Card>
+  <Card title="Writing plans" href="/skills/writing-plans">
+    Converts approved designs into bite-sized, TDD-ready implementation tasks.
+  </Card>
+  <Card title="Executing plans" href="/skills/executing-plans">
+    Runs implementation plans in batches with checkpoints between each batch.
+  </Card>
+  <Card title="Test-driven development" href="/skills/test-driven-development">
+    Enforces red-green-refactor for every feature and bug fix.
+  </Card>
+  <Card title="Systematic debugging" href="/skills/systematic-debugging">
+    Four-phase root cause investigation before any fix is attempted.
+  </Card>
+  <Card title="Verification before completion" href="/skills/verification-before-completion">
+    Requires running verification commands before any completion claim.
+  </Card>
+  <Card title="Deep research" href="/skills/deep-research">
+    Multi-source research with source quality ranking and confidence levels.
+  </Card>
+  <Card title="Architecture design" href="/skills/architecture-design">
+    Constraint-first option evaluation with documented decision records.
+  </Card>
+  <Card title="Security review" href="/skills/security-review">
+    OWASP Top 10 checklist for every security-sensitive code change.
+  </Card>
+  <Card title="Performance optimization" href="/skills/performance-optimization">
+    Measure-first profiling before any optimization is applied.
+  </Card>
+  <Card title="Confidence check" href="/skills/confidence-check">
+    Self-assessment gating before implementation begins.
+  </Card>
+  <Card title="Browser agent" href="/skills/browser-agent">
+    Delegates UI testing and browser automation to Antigravity's built-in browser subagent.
+  </Card>
+  <Card title="Dependency management" href="/skills/dependency-management">
+    Deliberate evaluation criteria for every dependency decision.
+  </Card>
+</CardGroup>
+
+## Inspecting skills
+
+Skills live in `~/.gemini/antigravity/skills/`. You can read any skill file directly to see the exact process the agent follows:
+
+```bash
+cat ~/.gemini/antigravity/skills/test-driven-development/SKILL.md
+```
+
+To add or customize skills, follow the `writing-skills` skill (available after installing SuperAntigravity).

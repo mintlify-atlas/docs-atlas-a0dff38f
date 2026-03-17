@@ -1,0 +1,74 @@
+---
+title: "/brainstorm"
+description: "Requirements discovery before any code — turns vague ideas into approved designs."
+---
+
+## What it does
+
+`/brainstorm` is the mandatory first step in the SuperAntigravity workflow. It runs a structured requirements discovery session that transforms a vague idea into a concrete, approved design document — before any code is written.
+
+The command enforces a hard gate: implementation cannot begin until you have explicitly approved the design.
+
+## When to use
+
+Use `/brainstorm` before starting any new feature, component, or significant change. If you already have an approved, documented design, skip to [`/plan`](/commands/plan) instead.
+
+## Prerequisites
+
+<Warning>
+**Planning Mode must be active** in Antigravity settings before running `/brainstorm`. This command requires deep thinking and design reasoning that Planning Mode enables.
+</Warning>
+
+## Conversation mode
+
+**Planning Mode** — required.
+
+## What happens
+
+<Steps>
+  <Step title="Announce and commit">
+    Antigravity announces: "Starting /brainstorm. I will not write any code until you approve the design." A session state header is output showing current stage, design doc status, and question count.
+  </Step>
+  <Step title="Load the brainstorming skill">
+    The `brainstorming` skill is loaded and followed completely. This includes asking clarifying questions (~5 total), proposing approaches, and converging on a design.
+  </Step>
+  <Step title="Gate check before any code">
+    Before any implementation can proceed, Antigravity confirms a design doc exists at `docs/plans/YYYY-MM-DD-topic-design.md`.
+  </Step>
+  <Step title="Transition to /plan">
+    Once you explicitly approve the design, Antigravity transitions to [`/plan`](/commands/plan) for implementation planning.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `brainstorming` — core requirements discovery and design convergence process
+
+## Example
+
+```bash
+/brainstorm I want to add a notification system to the app
+```
+
+Antigravity responds with a session header, then begins asking clarifying questions about scope, delivery channels, user preferences, and technical constraints. After ~5 questions and an approach proposal, it presents a design. Once you approve, it saves the design doc to `docs/plans/2026-03-17-notification-system-design.md` and prompts you to run `/plan`.
+
+<Note>
+If you say "just build it" or "skip the design", the hard gate activates: Antigravity will refuse and explain that design approval prevents wasted effort. The brainstorm takes 10–15 minutes and saves hours of rework.
+</Note>
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/plan" href="/commands/plan">
+    The next step — convert your approved design into a bite-sized implementation plan.
+  </Card>
+  <Card title="/research" href="/commands/research">
+    Run before /brainstorm when you need to validate technical feasibility first.
+  </Card>
+  <Card title="/design" href="/commands/design">
+    For focused architecture and API design work outside the main workflow.
+  </Card>
+  <Card title="/implement" href="/commands/implement">
+    Step 3 — only reachable after brainstorm and plan are complete.
+  </Card>
+</CardGroup>

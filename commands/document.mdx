@@ -1,0 +1,113 @@
+---
+title: "/document"
+description: "Generate focused documentation for components, functions, APIs, and features."
+---
+
+## What it does
+
+`/document` generates documentation targeted to a specific type: inline docstrings or JSDoc, external API reference, user guides, or architecture documentation. It documents the *why*, not the *what* — code already shows what; documentation explains the reasoning behind it.
+
+## When to use
+
+Use `/document` after implementing a new feature or API, when onboarding new team members to a system, when external consumers need API documentation, or when non-obvious design decisions need to be captured before context is lost.
+
+## Prerequisites
+
+- The code, API, or system to document is implemented and stable — documenting moving targets produces stale docs
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Identify documentation type">
+    The type is determined from your command (`--type inline|api|guide|architecture`) or inferred from the target.
+  </Step>
+  <Step title="Generate inline documentation (if applicable)">
+    For functions, classes, and complex logic: language-appropriate inline docs are written (JSDoc for JS/TS, docstrings for Python). Each includes what the code does, parameters, return value, and a usage example.
+  </Step>
+  <Step title="Generate API reference (if applicable)">
+    For external-facing APIs: endpoints, request/response formats, authentication, error codes, and examples are documented.
+  </Step>
+  <Step title="Generate user guide (if applicable)">
+    For features users interact with: what it does, how to use it, common patterns, and gotchas are documented.
+  </Step>
+  <Step title="Generate architecture docs (if applicable)">
+    For system components: purpose, dependencies, data flow, and deployment are documented.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+No skills are invoked. `/document` is a direct workflow.
+
+## Documentation types
+
+| Type | For | Includes |
+|---|---|---|
+| `inline` | Functions, classes, complex logic | What it does, params, return, example |
+| `api` | External-facing APIs | Endpoints, request/response, auth, error codes, examples |
+| `guide` | Features users interact with | What it does, how to use, patterns, gotchas |
+| `architecture` | System components and relationships | Purpose, dependencies, data flow, deployment |
+
+## Usage
+
+```bash
+/document [target]
+/document [target] --type inline
+/document [target] --type api
+/document [target] --type guide
+/document [target] --type architecture
+```
+
+## Documentation rules
+
+- Document the WHY, not the WHAT (code shows what, comments explain why)
+- Don't document obvious things
+- Keep docs close to the code they describe
+- Update docs when code changes — stale docs are worse than no docs
+
+## Example
+
+```bash
+/document src/notifications/service.ts --type inline
+```
+
+Antigravity reads `NotificationService` and adds JSDoc:
+
+```typescript
+/**
+ * Delivers a notification through the specified channel.
+ *
+ * Uses exponential backoff on transient failures (network timeouts, rate limits).
+ * Permanent failures (invalid recipient, channel disabled) are not retried.
+ *
+ * @param notification - The notification payload including recipient and content
+ * @param channel - Delivery channel: 'email' | 'push' | 'sms'
+ * @returns Promise resolving to delivery receipt with timestamp and messageId
+ * @throws {ChannelDisabledError} if the channel is not configured for this environment
+ *
+ * @example
+ * const receipt = await service.send(notification, 'email');
+ * console.log(receipt.messageId);
+ */
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/explain" href="/commands/explain">
+    For explanations in conversation — /document produces persistent artifacts.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    /review checks that new behavior has tests; /document ensures it has docs.
+  </Card>
+  <Card title="/design" href="/commands/design">
+    /design produces the architecture decision record that /document can formalize.
+  </Card>
+  <Card title="/improve" href="/commands/improve">
+    Maintainability improvements include documenting non-obvious decisions.
+  </Card>
+</CardGroup>

@@ -1,0 +1,106 @@
+---
+title: "/cleanup"
+description: "Remove dead code, unused imports, and optimize project structure."
+---
+
+## What it does
+
+`/cleanup` identifies and removes dead code, unused imports, empty blocks, and commented-out obsolete code. It distinguishes between items safe to auto-remove and items that require your approval before deletion.
+
+## When to use
+
+Use `/cleanup` periodically to reduce codebase noise, after a major refactor that left behind unused code, or before a code review to ensure reviewers are looking at live code only.
+
+## Prerequisites
+
+- Tests passing before starting — cleanup changes must not break the test suite
+
+## Conversation mode
+
+Either mode works.
+
+## What happens
+
+<Steps>
+  <Step title="Identify cleanup candidates">
+    The codebase is analyzed to identify unused imports, dead code with no call sites, empty blocks, and commented-out code.
+  </Step>
+  <Step title="Classify by safety">
+    Each candidate is classified as either auto-safe (can remove without asking) or requires approval (must show you the code first).
+  </Step>
+  <Step title="Auto-remove safe items">
+    Unused imports with zero references, dead code with no call sites, empty blocks and no-op functions, and clearly obsolete commented-out code are removed automatically.
+  </Step>
+  <Step title="Seek approval for ambiguous items">
+    Code with indirect references, exports that might be used externally, test fixtures and utilities, and configuration values that might be used by external tooling are shown to you before removal. You decide.
+  </Step>
+  <Step title="Run tests after each batch">
+    Tests run after every batch of changes to confirm nothing was broken.
+  </Step>
+  <Step title="Commit in small batches">
+    Changes are committed in small, descriptive batches — not one large cleanup commit.
+  </Step>
+  <Step title="Verify before declaring done">
+    The `verification-before-completion` skill runs before the cleanup session is closed.
+  </Step>
+</Steps>
+
+## Skills invoked
+
+- `verification-before-completion` — confirms cleanup is complete and nothing is broken
+
+## What's auto-safe to remove
+
+- Unused imports with zero references
+- Dead code with no call sites
+- Empty blocks and no-op functions
+- Commented-out code that's clearly obsolete
+
+## What requires your approval
+
+- Code with indirect references
+- Exports that might be used externally
+- Test fixtures and utilities
+- Configuration values (might be used by external tooling)
+
+<Warning>
+If in doubt, Antigravity asks. Removing the wrong code is worse than leaving technical debt.
+</Warning>
+
+## Example
+
+```bash
+/cleanup
+```
+
+Antigravity analyzes the codebase and reports:
+
+```
+Auto-safe (will remove):
+  - src/utils/deprecated-formatter.ts (0 call sites)
+  - 12 unused imports across 5 files
+  - 3 empty catch blocks in src/api/
+
+Requires your approval:
+  - src/utils/legacy-export.ts — exported but no internal consumers (external use?)
+  - tests/fixtures/old-user.json — referenced only in commented-out test
+
+Proceed with auto-safe removals? (y/n)
+```
+
+## Related commands
+
+<CardGroup cols={2}>
+  <Card title="/analyze" href="/commands/analyze">
+    /analyze identifies dead code as part of a broader quality review.
+  </Card>
+  <Card title="/improve" href="/commands/improve">
+    For improving live code quality rather than removing dead code.
+  </Card>
+  <Card title="/test" href="/commands/test">
+    Verify the test suite still passes after cleanup.
+  </Card>
+  <Card title="/review" href="/commands/review">
+    Run /review after cleanup to confirm no accidental removals affected behavior.
+  </Card>
+</CardGroup>
